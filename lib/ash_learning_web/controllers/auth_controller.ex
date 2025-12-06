@@ -44,6 +44,7 @@ defmodule AshLearningWeb.AuthController do
     |> redirect(to: ~p"/sign-in")
   end
 
+  @impl AshAuthentication.Phoenix.Controller
   def sign_out(conn, _params) do
     return_to = get_session(conn, :return_to) || ~p"/"
 
@@ -51,5 +52,21 @@ defmodule AshLearningWeb.AuthController do
     |> clear_session(:ash_learning)
     |> put_flash(:info, "You are now signed out")
     |> redirect(to: return_to)
+  end
+
+  @remember_me_cookie_options [
+    http_only: true,
+    secure: Mix.env() != :dev,
+    same_site: "Lax"
+  ]
+
+  # Without AshAuthenticationPhoenix
+  # https://github.com/team-alembic/ash_authentication/blob/main/documentation/tutorials/remember-me.md#without-ashauthenticationphoenix
+  @impl AshAuthentication.Phoenix.Controller
+  def put_remember_me_cookie(conn, cookie_name, %{token: token, max_age: max_age}) do
+    cookie_options = Keyword.put(@remember_me_cookie_options, :max_age, max_age)
+
+    conn
+    |> put_resp_cookie(cookie_name, token, cookie_options)
   end
 end

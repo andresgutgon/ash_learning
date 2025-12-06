@@ -32,6 +32,7 @@ defmodule AshLearning.Accounts.User do
     end
 
     strategies do
+      # PASSWORD RELATED STRATEGIES
       password :password do
         identity_field :email
         hash_provider AshAuthentication.BcryptProvider
@@ -45,6 +46,13 @@ defmodule AshLearning.Accounts.User do
         end
       end
 
+      remember_me do
+        sign_in_action_name :sign_in_with_remember_me
+        cookie_name :remember_me
+        token_lifetime {30, :days}
+      end
+
+      # INDEPENDENT STRATEGIES
       magic_link do
         identity_field :email
         registration_enabled? true
@@ -114,8 +122,37 @@ defmodule AshLearning.Accounts.User do
         sensitive? true
       end
 
-      # validates the provided email and password and generates a token
+      argument :remember_me, :boolean do
+        description "Whether to generate a remember me token."
+        allow_nil? true
+      end
+
       prepare AshAuthentication.Strategy.Password.SignInPreparation
+      prepare AshAuthentication.Strategy.RememberMe.MaybeGenerateTokenPreparation
+
+      metadata :token, :string do
+        description "A JWT that can be used to authenticate the user."
+        allow_nil? false
+      end
+
+      metadata :remember_me, :map do
+        description "A map with the remember me token and strategy."
+        allow_nil? true
+      end
+    end
+
+    read :sign_in_with_remember_me do
+      description "Attempt to sign in using a remember me token."
+      get? true
+
+      argument :token, :string do
+        description "The remember me token."
+        allow_nil? false
+        sensitive? true
+      end
+
+      # validates the provided sign in token and generates a token
+      prepare AshAuthentication.Strategy.RememberMe.SignInPreparation
 
       metadata :token, :string do
         description "A JWT that can be used to authenticate the user."
@@ -124,6 +161,9 @@ defmodule AshLearning.Accounts.User do
     end
 
     read :sign_in_with_token do
+      # THIS_IS_ONLY_LIVE_GENERATED_VIEWS
+      # ::::::::::::::::::::::::::::::::::
+      #
       # In the generated sign in components, we validate the
       # email and password directly in the LiveView
       # and generate a short-lived token that can be used to sign in over
@@ -141,12 +181,23 @@ defmodule AshLearning.Accounts.User do
         sensitive? true
       end
 
+      argument :remember_me, :boolean do
+        description "Whether to generate a remember me token."
+        allow_nil? true
+      end
+
       # validates the provided sign in token and generates a token
       prepare AshAuthentication.Strategy.Password.SignInWithTokenPreparation
+      prepare AshAuthentication.Strategy.RememberMe.MaybeGenerateTokenPreparation
 
       metadata :token, :string do
         description "A JWT that can be used to authenticate the user."
         allow_nil? false
+      end
+
+      metadata :remember_me, :map do
+        description "A map with the remember me token and strategy."
+        allow_nil? true
       end
     end
 
