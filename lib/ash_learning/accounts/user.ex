@@ -194,6 +194,7 @@ defmodule AshLearning.Accounts.User do
 
     read :get_by_email do
       description "Looks up a user by their email"
+      argument :email, :ci_string, allow_nil?: false
       get_by :email
     end
 
