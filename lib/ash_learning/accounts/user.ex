@@ -35,6 +35,7 @@ defmodule AshLearning.Accounts.User do
       password :password do
         identity_field :email
         hash_provider AshAuthentication.BcryptProvider
+        require_confirmed_with :confirmed_at
 
         resettable do
           sender AshLearning.Accounts.User.Senders.SendPasswordResetEmail
