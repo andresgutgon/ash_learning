@@ -5,6 +5,17 @@ defmodule AshLearningWeb.Router do
 
   import AshAuthentication.Plug.Helpers
 
+  defp require_authenticated_user(conn, _opts) do
+    if conn.assigns[:current_user] do
+      conn
+    else
+      conn
+      |> put_flash(:error, "You must log in to access this page.")
+      |> redirect(to: "/sign-in")
+      |> halt()
+    end
+  end
+
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
@@ -19,6 +30,16 @@ defmodule AshLearningWeb.Router do
     plug :accepts, ["json"]
     plug :load_from_bearer
     plug :set_actor, :user
+  end
+
+  pipeline :require_auth do
+    plug :require_authenticated_user
+  end
+
+  scope "/", AshLearningWeb do
+    pipe_through [:browser, :require_auth]
+
+    get "/", PageController, :home
   end
 
   scope "/", AshLearningWeb do
@@ -40,8 +61,6 @@ defmodule AshLearningWeb.Router do
 
   scope "/", AshLearningWeb do
     pipe_through :browser
-
-    get "/", PageController, :home
     auth_routes AuthController, AshLearning.Accounts.User, path: "/auth"
     sign_out_route AuthController
 
