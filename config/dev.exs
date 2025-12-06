@@ -1,4 +1,5 @@
 import Config
+config :ash, policies: [show_policy_breakdowns?: true]
 
 # Configure your database
 config :ash_learning, AshLearning.Repo,
@@ -68,7 +69,7 @@ config :ash_learning, AshLearningWeb.Endpoint,
   ]
 
 # Enable dev routes for dashboard and mailbox
-config :ash_learning, dev_routes: true
+config :ash_learning, dev_routes: true, token_signing_secret: "COcv8F14gQqwmVxOrfhRvSurF17nj9bH"
 
 # Do not include metadata nor timestamps in development logs
 config :logger, :default_formatter, format: "[$level] $message\n"

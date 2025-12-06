@@ -15,7 +15,8 @@ defmodule AshLearning.Application do
       # Start a worker by calling: AshLearning.Worker.start_link(arg)
       # {AshLearning.Worker, arg},
       # Start to serve requests, typically the last entry
-      AshLearningWeb.Endpoint
+      AshLearningWeb.Endpoint,
+      {AshAuthentication.Supervisor, [otp_app: :ash_learning]}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
