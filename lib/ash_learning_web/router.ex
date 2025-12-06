@@ -60,14 +60,12 @@ defmodule AshLearningWeb.Router do
                     Elixir.AshAuthentication.Phoenix.Overrides.DaisyUI
                   ]
 
-    # Remove this if you do not want to use the reset password feature
     reset_route auth_routes_prefix: "/auth",
                 overrides: [
                   AshLearningWeb.AuthOverrides,
                   Elixir.AshAuthentication.Phoenix.Overrides.DaisyUI
                 ]
 
-    # Remove this if you do not use the confirmation strategy
     confirm_route AshLearning.Accounts.User, :confirm_new_user,
       auth_routes_prefix: "/auth",
       overrides: [
@@ -75,7 +73,6 @@ defmodule AshLearningWeb.Router do
         Elixir.AshAuthentication.Phoenix.Overrides.DaisyUI
       ]
 
-    # Remove this if you do not use the magic link strategy.
     magic_sign_in_route(AshLearning.Accounts.User, :magic_link,
       auth_routes_prefix: "/auth",
       overrides: [

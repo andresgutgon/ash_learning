@@ -11,6 +11,13 @@ config :ash_learning, AshLearning.Repo,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
 
+# GitHub OAuth Configuration
+# Make sure to set these environment variables or source .env.development
+config :ash_learning, :github,
+  client_id: System.get_env("GITHUB_CLIENT_ID") || "your-github-client-id",
+  redirect_uri: System.get_env("GITHUB_REDIRECT_URI") || "http://localhost:4000/auth",
+  client_secret: System.get_env("GITHUB_CLIENT_SECRET") || "your-github-client-secret"
+
 # For development, we disable any cache and enable
 # debugging and code reloading.
 #

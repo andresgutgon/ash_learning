@@ -52,6 +52,12 @@ defmodule AshLearning.Accounts.User do
 
         sender AshLearning.Accounts.User.Senders.SendMagicLinkEmail
       end
+
+      github do
+        client_id AshLearning.Secrets
+        redirect_uri AshLearning.Secrets
+        client_secret AshLearning.Secrets
+      end
     end
   end
 
@@ -258,6 +264,36 @@ defmodule AshLearning.Accounts.User do
 
       run AshAuthentication.Strategy.MagicLink.Request
     end
+
+    create :register_with_github do
+      argument :user_info, :map, allow_nil?: false
+      argument :oauth_tokens, :map, allow_nil?: false
+      upsert? true
+      upsert_identity :unique_email
+
+      # Required if you have token generation enabled.
+      change AshAuthentication.GenerateTokenChange
+
+      # Required if you have the `identity_resource` configuration enabled.
+      change AshAuthentication.Strategy.OAuth2.IdentityChange
+
+      change fn changeset, _ ->
+        user_info = Ash.Changeset.get_argument(changeset, :user_info)
+
+        Ash.Changeset.change_attributes(changeset, Map.take(user_info, ["email"]))
+      end
+
+      # Required if you're using the password & confirmation strategies
+      upsert_fields []
+      change set_attribute(:confirmed_at, &DateTime.utc_now/0)
+
+      change after_action(fn _changeset, user, _context ->
+               case user.confirmed_at do
+                 nil -> {:error, "Unconfirmed user exists already"}
+                 _ -> {:ok, user}
+               end
+             end)
+    end
   end
 
   policies do
@@ -274,9 +310,7 @@ defmodule AshLearning.Accounts.User do
       public? true
     end
 
-    attribute :hashed_password, :string do
-      sensitive? true
-    end
+    attribute :hashed_password, :string, allow_nil?: true, sensitive?: true
 
     attribute :confirmed_at, :utc_datetime_usec
   end
