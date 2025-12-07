@@ -69,24 +69,6 @@ defmodule AshLearningWeb.AuthController do
     |> put_resp_cookie(cookie_name, token, cookie_options)
   end
 
-  def link_github(conn, _params) do
-    link_provider(conn, "github")
-  end
-
-  def link_google(conn, _params) do
-    conn
-    |> put_flash(:info, "Google OAuth coming soon!")
-    |> redirect(to: ~p"/")
-  end
-
-  defp link_provider(conn, provider) do
-    current_user = conn.assigns.current_user
-
-    conn
-    |> put_session(:linking_user_id, current_user.id)
-    |> redirect(to: "/auth/user/#{provider}")
-  end
-
   def disconnect_provider(conn, %{"provider" => provider}) do
     current_user = conn.assigns.current_user
 

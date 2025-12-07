@@ -41,8 +41,6 @@ defmodule AshLearningWeb.Router do
     pipe_through [:browser, :require_auth]
 
     get "/", PageController, :home
-    get "/link/github", AuthController, :link_github
-    get "/link/google", AuthController, :link_google
     delete "/disconnect/:provider", AuthController, :disconnect_provider
   end
 
