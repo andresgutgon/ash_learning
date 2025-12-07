@@ -65,7 +65,15 @@ defmodule AshLearning.Accounts.User do
         client_id AshLearning.Secrets
         redirect_uri AshLearning.Secrets
         client_secret AshLearning.Secrets
+        identity_resource AshLearning.Accounts.UserIdentity
       end
+
+      # google do
+      #   client_id AshLearning.Secrets
+      #   redirect_uri AshLearning.Secrets
+      #   client_secret AshLearning.Secrets
+      #   identity_resource AshLearning.Accounts.UserIdentity
+      # end
     end
   end
 
@@ -364,6 +372,13 @@ defmodule AshLearning.Accounts.User do
     attribute :hashed_password, :string, allow_nil?: true, sensitive?: true
 
     attribute :confirmed_at, :utc_datetime_usec
+  end
+
+  relationships do
+    has_many :identities, AshLearning.Accounts.UserIdentity do
+      destination_attribute :user_id
+      public? true
+    end
   end
 
   identities do

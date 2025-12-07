@@ -15,7 +15,6 @@ defmodule AshLearningWeb.AuthController do
     conn
     |> delete_session(:return_to)
     |> store_in_session(user)
-    # If your resource has a different name, update the assign name here (i.e :current_admin)
     |> assign(:current_user, user)
     |> put_flash(:info, message)
     |> redirect(to: return_to)
@@ -68,5 +67,45 @@ defmodule AshLearningWeb.AuthController do
 
     conn
     |> put_resp_cookie(cookie_name, token, cookie_options)
+  end
+
+  def link_github(conn, _params) do
+    link_provider(conn, "github")
+  end
+
+  def link_google(conn, _params) do
+    conn
+    |> put_flash(:info, "Google OAuth coming soon!")
+    |> redirect(to: ~p"/")
+  end
+
+  defp link_provider(conn, provider) do
+    current_user = conn.assigns.current_user
+
+    conn
+    |> put_session(:linking_user_id, current_user.id)
+    |> redirect(to: "/auth/user/#{provider}")
+  end
+
+  def disconnect_provider(conn, %{"provider" => provider}) do
+    current_user = conn.assigns.current_user
+
+    case disconnect_identity(current_user, provider) do
+      {:ok, _} ->
+        conn
+        |> put_flash(:info, "#{String.capitalize(provider)} account disconnected successfully!")
+        |> redirect(to: ~p"/")
+
+      {:error, _reason} ->
+        conn
+        |> put_flash(:error, "Failed to disconnect #{provider} account.")
+        |> redirect(to: ~p"/")
+    end
+  end
+
+  defp disconnect_identity(user, provider) do
+    AshLearning.Accounts.UserIdentity
+    |> Ash.ActionInput.for_action(:disconnect_for_user, %{user_id: user.id, provider: provider})
+    |> Ash.run_action(domain: AshLearning.Accounts)
   end
 end
