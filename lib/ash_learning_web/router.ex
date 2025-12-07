@@ -41,6 +41,7 @@ defmodule AshLearningWeb.Router do
     pipe_through [:browser, :require_auth]
 
     get "/", PageController, :home
+    delete "/disconnect/:provider", AuthController, :disconnect_provider
   end
 
   scope "/", AshLearningWeb do

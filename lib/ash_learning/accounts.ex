@@ -4,5 +4,6 @@ defmodule AshLearning.Accounts do
   resources do
     resource AshLearning.Accounts.Token
     resource AshLearning.Accounts.User
+    resource AshLearning.Accounts.UserIdentity
   end
 end

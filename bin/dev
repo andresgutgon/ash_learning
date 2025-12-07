@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+# Load environment variables from .env.development
+set -a  # automatically export all variables
+source .env.development
+set +a  # stop automatically exporting
+
+case $@ in
+  c)
+    iex -S mix
+    ;;
+
+  *)
+    mix phx.server
+    ;;
+esac
