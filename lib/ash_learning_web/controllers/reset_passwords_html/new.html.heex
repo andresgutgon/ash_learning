@@ -1,0 +1,36 @@
+<Layouts.auth
+  flash={@flash}
+  title={@page_title}
+  description="Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one."
+>
+  <.form for={@form} action={~p"/reset-password"} method="post">
+    <div class="space-y-4">
+      <.input
+        field={@form[:email]}
+        type="email"
+        label="Email address"
+        placeholder="Enter your email"
+        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+      />
+    </div>
+
+    <button
+      type="submit"
+      class="w-full mt-6 bg-indigo-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors duration-200 shadow-sm hover:shadow"
+    >
+      Send reset password instructions
+    </button>
+  </.form>
+
+  <div class="my-6 text-center">
+    <p class="text-sm text-gray-600">
+      Need an account?
+      <.link
+        href={~p"/register"}
+        class="font-medium text-indigo-600 hover:text-indigo-500 transition-colors duration-200"
+      >
+        Create one
+      </.link>
+    </p>
+  </div>
+</Layouts.auth>

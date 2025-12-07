@@ -1,0 +1,65 @@
+<Layouts.auth
+  flash={@flash}
+  title="Welcome Back"
+  description="Login to your account to continue learning"
+>
+  <.form for={@form} action={~p"/login"} method="post">
+    <input type="hidden" name="return_to" value={@return_to} />
+    <div class="space-y-4">
+      <.input
+        field={@form[:email]}
+        type="email"
+        label="Email address"
+        placeholder="Enter your email"
+        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+      />
+
+      <.input
+        field={@form[:password]}
+        type="password"
+        label="Password"
+        placeholder="Create a password"
+        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+      />
+
+      <div class="flex items-center justify-between">
+        <.link
+          href={
+            if @form[:email].value,
+              do: ~p"/reset-password?email=#{@form[:email].value}",
+              else: ~p"/reset-password"
+          }
+          class="text-sm text-indigo-600 hover:text-indigo-500 transition-colors duration-200"
+        >
+          Forgot your password?
+        </.link>
+      </div>
+
+      <.remember_me_checkbox />
+    </div>
+
+    <button
+      type="submit"
+      class="w-full mt-6 bg-indigo-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors duration-200 shadow-sm hover:shadow"
+    >
+      Login
+    </button>
+  </.form>
+
+  <div class="my-6 text-center">
+    <p class="text-sm text-gray-600">
+      Need an account?
+      <.link
+        href={~p"/register"}
+        class="font-medium text-indigo-600 hover:text-indigo-500 transition-colors duration-200"
+      >
+        Create one
+      </.link>
+    </p>
+  </div>
+
+  <.divider label="Use other methods" />
+  <.providers_list />
+  <.divider label="Or continue with email" />
+  <.magic_link_form return_to={@return_to} />
+</Layouts.auth>

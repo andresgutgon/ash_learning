@@ -22,7 +22,7 @@ defmodule AshLearning.Accounts.User.Senders.SendNewUserConfirmationEmail do
   end
 
   defp body(params) do
-    url = url(~p"/confirm_new_user/#{params[:token]}")
+    url = url(~p"/register/#{params[:token]}/edit")
 
     """
     <p>Click this link to confirm your email:</p>

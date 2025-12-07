@@ -24,27 +24,34 @@ config :spark,
     remove_parens?: true,
     "Ash.Resource": [
       section_order: [
-        :authentication,
-        :token,
-        :user_identity,
         :postgres,
         :resource,
-        :code_interface,
-        :actions,
+        :attributes,
+        :relationships,
+        :aggregates,
+        :multitenancy,
         :policies,
-        :pub_sub,
+        :identities,
+        :field_policies,
+        :code_interface,
+        :authentication,
+        :actions,
         :preparations,
         :changes,
         :validations,
-        :multitenancy,
-        :attributes,
-        :relationships,
         :calculations,
-        :aggregates,
-        :identities
+        :pub_sub
       ]
     ],
-    "Ash.Domain": [section_order: [:resources, :policies, :authorization, :domain, :execution]]
+    "Ash.Domain": [
+      section_order: [
+        :resources,
+        :policies,
+        :authorization,
+        :domain,
+        :execution
+      ]
+    ]
   ]
 
 config :ash_learning,

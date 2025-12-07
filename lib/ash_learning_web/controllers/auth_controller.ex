@@ -40,7 +40,7 @@ defmodule AshLearningWeb.AuthController do
 
     conn
     |> put_flash(:error, message)
-    |> redirect(to: ~p"/sign-in")
+    |> redirect(to: ~p"/login")
   end
 
   @impl AshAuthentication.Phoenix.Controller
@@ -51,6 +51,19 @@ defmodule AshLearningWeb.AuthController do
     |> clear_session(:ash_learning)
     |> put_flash(:info, "You are now signed out")
     |> redirect(to: return_to)
+  end
+
+  @doc """
+  Conditionally puts a remember me cookie if the user has remember me metadata.
+  """
+  def maybe_put_remember_me(conn, user) do
+    case Map.get(user.__metadata__, :remember_me) do
+      %{token: _token, cookie_name: cookie_name} = remember_me_token ->
+        put_remember_me_cookie(conn, to_string(cookie_name), remember_me_token)
+
+      _ ->
+        conn
+    end
   end
 
   @remember_me_cookie_options [
@@ -69,10 +82,10 @@ defmodule AshLearningWeb.AuthController do
     |> put_resp_cookie(cookie_name, token, cookie_options)
   end
 
-  def disconnect_provider(conn, %{"provider" => provider}) do
+  def disconnect_provider(conn, %{"provider" => provider, "uid" => uid}) do
     current_user = conn.assigns.current_user
 
-    case disconnect_identity(current_user, provider) do
+    case disconnect_identity(current_user, provider, uid) do
       {:ok, _} ->
         conn
         |> put_flash(:info, "#{String.capitalize(provider)} account disconnected successfully!")
@@ -85,9 +98,9 @@ defmodule AshLearningWeb.AuthController do
     end
   end
 
-  defp disconnect_identity(user, provider) do
+  defp disconnect_identity(user, provider, uid) do
     AshLearning.Accounts.UserIdentity
-    |> Ash.ActionInput.for_action(:disconnect, %{user_id: user.id, provider: provider})
+    |> Ash.ActionInput.for_action(:disconnect, %{user_id: user.id, provider: provider, uid: uid})
     |> Ash.run_action(domain: AshLearning.Accounts)
   end
 end
