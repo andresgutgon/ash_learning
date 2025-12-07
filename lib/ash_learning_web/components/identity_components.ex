@@ -11,21 +11,8 @@ defmodule AshLearningWeb.Components.IdentityComponents do
   attr :class, :string, default: ""
 
   def identity_list(assigns) do
-    # Define available providers
-    providers = [
-      %{
-        name: "github",
-        display_name: "GitHub",
-        icon: "hero-arrow-top-right-on-square",
-        link_path: ~p"/link/github"
-      },
-      %{
-        name: "google",
-        display_name: "Google",
-        icon: "hero-arrow-top-right-on-square",
-        link_path: "/link/google"
-      }
-    ]
+    # Get providers based on user's actual identities
+    providers = get_user_providers(assigns.current_user)
 
     assigns = assign(assigns, :providers, providers)
 
@@ -88,8 +75,7 @@ defmodule AshLearningWeb.Components.IdentityComponents do
             class="btn btn-sm btn-outline btn-error"
             data-confirm={"Are you sure you want to disconnect your #{@provider.display_name} account?"}
           >
-            <.icon name="hero-x-mark" class="w-4 h-4" />
-            Disconnect
+            <.icon name="hero-x-mark" class="w-4 h-4" /> Disconnect
           </.link>
         <% else %>
           <a
@@ -146,10 +132,50 @@ defmodule AshLearningWeb.Components.IdentityComponents do
     """
   end
 
+  # Helper function to get providers based on user identities
+  defp get_user_providers(user) do
+    case user do
+      %{identities: identities} when is_list(identities) ->
+        identities
+        |> Enum.map(&create_provider_config/1)
+        |> Enum.uniq_by(& &1.name)
+
+      _ ->
+        []
+    end
+  end
+
+  # Helper function to create provider config from identity
+  defp create_provider_config(%{strategy: strategy}) do
+    case strategy do
+      "github" ->
+        %{
+          name: "github",
+          display_name: "GitHub",
+          icon: "hero-arrow-top-right-on-square",
+          link_path: ~p"/link/github"
+        }
+
+      "google" ->
+        %{
+          name: "google",
+          display_name: "Google",
+          icon: "hero-arrow-top-right-on-square",
+          link_path: "/link/google"
+        }
+
+      _ ->
+        %{
+          name: strategy,
+          display_name: String.capitalize(strategy),
+          icon: "hero-globe-alt",
+          link_path: "/link/#{strategy}"
+        }
+    end
+  end
+
   # Helper function to get identity for a provider
   defp get_identity_for_provider(user, provider_name) do
-    # This will be loaded from the user's identities relationship
-    # For now, return nil - we'll implement this next
     case user do
       %{identities: identities} when is_list(identities) ->
         Enum.find(identities, fn identity -> identity.strategy == provider_name end)
@@ -159,4 +185,3 @@ defmodule AshLearningWeb.Components.IdentityComponents do
     end
   end
 end
-

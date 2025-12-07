@@ -22,44 +22,32 @@ defmodule AshLearning.Accounts.UserIdentity do
         user_id = input.arguments.user_id
         provider = input.arguments.provider
 
-        IO.inspect({:disconnect_action, user_id: user_id, provider: provider},
-          label: "Disconnect Action Input"
-        )
-
         # Find and destroy the identity
-        result =
-          case Ash.read(__MODULE__, domain: AshLearning.Accounts) do
-            {:ok, identities} ->
-              # Find the identity for this user and provider
-              identity =
-                Enum.find(identities, fn id ->
-                  id.user_id == user_id and id.strategy == provider
-                end)
+        case Ash.read(__MODULE__, domain: AshLearning.Accounts) do
+          {:ok, identities} ->
+            identity =
+              Enum.find(identities, fn id ->
+                id.user_id == user_id and id.strategy == provider
+              end)
 
-              if identity do
-                case Ash.destroy(identity, domain: AshLearning.Accounts) do
-                  {:ok, _destroyed_identity} ->
-                    {:ok, :disconnected}
+            if identity do
+              case Ash.destroy(identity, domain: AshLearning.Accounts) do
+                {:ok, _destroyed_identity} ->
+                  {:ok, :disconnected}
 
-                  {:error, error} ->
-                    {:error, error}
+                :ok ->
+                  {:ok, :disconnected}
 
-                  other ->
-                    {:error, "Unexpected destroy result: #{inspect(other)}"}
-                end
-              else
-                {:ok, :not_found}
+                {:error, error} ->
+                  {:error, error}
               end
+            else
+              {:ok, :not_found}
+            end
 
-    {:error, error} ->
-              {:error, error}
-
-            other ->
-              {:error, "Unexpected read result: #{inspect(other)}"}
-          end
-
-        IO.inspect(result, label: "Disconnect Action Result")
-        result
+          {:error, error} ->
+            {:error, error}
+        end
       end
     end
   end

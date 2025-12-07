@@ -15,8 +15,13 @@ config :ash_learning, AshLearning.Repo,
 # Make sure to set these environment variables or source .env.development
 config :ash_learning, :github,
   client_id: System.get_env("GITHUB_CLIENT_ID") || "your-github-client-id",
-  redirect_uri: System.get_env("GITHUB_REDIRECT_URI") || "http://localhost:4000/auth",
-  client_secret: System.get_env("GITHUB_CLIENT_SECRET") || "your-github-client-secret"
+  client_secret: System.get_env("GITHUB_CLIENT_SECRET") || "your-github-client-secret",
+  redirect_uri: System.get_env("GITHUB_REDIRECT_URI") || "http://localhost:4000/auth"
+
+config :ash_learning, :google,
+  client_id: System.get_env("GOOGLE_CLIENT_ID") || "your-google-client-id",
+  client_secret: System.get_env("GOOGLE_CLIENT_SECRET") || "your-google-client-secret",
+  redirect_uri: System.get_env("GOOGLE_REDIRECT_URI") || "http://localhost:4000/auth"
 
 # For development, we disable any cache and enable
 # debugging and code reloading.

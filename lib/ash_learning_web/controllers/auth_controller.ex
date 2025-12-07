@@ -105,7 +105,7 @@ defmodule AshLearningWeb.AuthController do
 
   defp disconnect_identity(user, provider) do
     AshLearning.Accounts.UserIdentity
-    |> Ash.ActionInput.for_action(:disconnect_for_user, %{user_id: user.id, provider: provider})
+    |> Ash.ActionInput.for_action(:disconnect, %{user_id: user.id, provider: provider})
     |> Ash.run_action(domain: AshLearning.Accounts)
   end
 end
