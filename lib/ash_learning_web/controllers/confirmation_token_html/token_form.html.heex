@@ -1,0 +1,32 @@
+<Layouts.app flash={@flash} current_user={@current_user}>
+  <div class="min-h-screen flex items-center justify-center bg-base-100 py-12 px-4">
+    <div class="max-w-md w-full space-y-8">
+      <div class="text-center">
+        <div class="mx-auto h-16 w-16 flex items-center justify-center rounded-full bg-primary/10 mb-6">
+          <.icon name="hero-envelope" class="h-8 w-8 text-primary" />
+        </div>
+        <h1 class="text-3xl font-bold text-base-content mb-4">
+          Complete Sign In
+        </h1>
+        <p class="text-base-content/70 mb-8">
+          Click the button below to sign in to your account.
+        </p>
+      </div>
+
+      <.form for={@form} action={@action_url} method="put" class="space-y-6">
+        <button
+          type="submit"
+          class="btn btn-primary w-full"
+        >
+          <.icon name="hero-lock-closed" class="h-5 w-5" /> Sign In Now
+        </button>
+      </.form>
+
+      <div class="text-center">
+        <.link href={@back_link_url} class="link link-primary">
+          Back to Login
+        </.link>
+      </div>
+    </div>
+  </div>
+</Layouts.app>

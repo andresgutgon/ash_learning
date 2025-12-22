@@ -6,8 +6,8 @@ source .env.development
 set +a  # stop automatically exporting
 
 case $@ in
-  c)
-    iex -S mix
+  --debug)
+    iex -S mix phx.server
     ;;
 
   *)

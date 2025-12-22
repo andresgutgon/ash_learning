@@ -10,8 +10,7 @@ defmodule AshLearningWeb.Router do
       conn
     else
       conn
-      |> put_flash(:error, "You must log in to access this page.")
-      |> redirect(to: "/sign-in")
+      |> redirect(to: "/login")
       |> halt()
     end
   end
@@ -25,6 +24,7 @@ defmodule AshLearningWeb.Router do
     plug :put_secure_browser_headers
     plug :sign_in_with_remember_me
     plug :load_from_session
+    plug :set_actor, :user
   end
 
   pipeline :api do
@@ -41,53 +41,27 @@ defmodule AshLearningWeb.Router do
     pipe_through [:browser, :require_auth]
 
     get "/", PageController, :home
-    delete "/disconnect/:provider", AuthController, :disconnect_provider
+    delete "/disconnect/:provider/:uid", AuthController, :disconnect_provider
   end
 
   scope "/", AshLearningWeb do
     pipe_through :browser
 
-    auth_routes AuthController, AshLearning.Accounts.User, path: "/auth"
+    auth_routes AuthController,
+                AshLearning.Accounts.User,
+                path: "/auth",
+                only: [:github, :google]
 
-    # My UI authentication routes
-    sign_out_route AuthController
+    scope "/login" do
+      get "/", SessionsController, :index
+      post "/", SessionsController, :create
+      delete "/", SessionsController, :delete
+    end
 
-    # Remove these if you'd like to use your own authentication views
-    sign_in_route register_path: "/register",
-                  reset_path: "/reset",
-                  auth_routes_prefix: "/auth",
-                  on_mount: [{AshLearningWeb.LiveUserAuth, :live_no_user}],
-                  overrides: [
-                    AshLearningWeb.AuthOverrides,
-                    Elixir.AshAuthentication.Phoenix.Overrides.DaisyUI
-                  ]
-
-    reset_route auth_routes_prefix: "/auth",
-                overrides: [
-                  AshLearningWeb.AuthOverrides,
-                  Elixir.AshAuthentication.Phoenix.Overrides.DaisyUI
-                ]
-
-    confirm_route AshLearning.Accounts.User, :confirm_new_user,
-      auth_routes_prefix: "/auth",
-      overrides: [
-        AshLearningWeb.AuthOverrides,
-        Elixir.AshAuthentication.Phoenix.Overrides.DaisyUI
-      ]
-
-    magic_sign_in_route(AshLearning.Accounts.User, :magic_link,
-      auth_routes_prefix: "/auth",
-      overrides: [
-        AshLearningWeb.AuthOverrides,
-        Elixir.AshAuthentication.Phoenix.Overrides.DaisyUI
-      ]
-    )
+    resources "/register", RegisterController, only: [:index, :create, :edit, :update]
+    resources "/magic-link", MagicLinkController, only: [:create, :edit, :update]
+    resources "/reset-password", ResetPasswordsController, only: [:index, :edit, :create, :update]
   end
-
-  # Other scopes may use custom stacks.
-  # scope "/api", AshLearningWeb do
-  #   pipe_through :api
-  # end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
   if Application.compile_env(:ash_learning, :dev_routes) do

@@ -86,6 +86,8 @@ defmodule AshLearningWeb do
       import Phoenix.HTML
       # Core UI components
       import AshLearningWeb.CoreComponents
+      import AshLearningWeb.ProviderIcons
+      import AshLearningWeb.AuthComponents
 
       # Common modules used in templates
       alias Phoenix.LiveView.JS

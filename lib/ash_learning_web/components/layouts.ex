@@ -55,14 +55,16 @@ defmodule AshLearningWeb.Layouts do
                 <span class="text-sm">Hello, {@current_user.email}</span>
               </li>
               <li>
-                <a href="/sign-out" class="btn btn-ghost btn-sm">Logout</a>
+                <.link href={~p"/login"} method="delete" class="btn btn-ghost btn-sm">
+                  Logout
+                </.link>
               </li>
             <% else %>
               <li>
-                <a href="/sign-in" class="btn btn-ghost btn-sm">Sign In</a>
+                <a href={~p"/login"} class="btn btn-ghost btn-sm">Log In</a>
               </li>
               <li>
-                <a href="/register" class="btn btn-primary btn-sm">Register</a>
+                <a href={~p"/register"} class="btn btn-primary btn-sm">Register</a>
               </li>
             <% end %>
           </ul>
@@ -70,12 +72,38 @@ defmodule AshLearningWeb.Layouts do
       </div>
     </header>
 
-    <!-- Main content with top padding to account for fixed header -->
     <main class="pt-16">
       {render_slot(@inner_block)}
     </main>
 
     <.flash_group flash={@flash} />
+    """
+  end
+
+  attr :flash, :map, required: true, doc: "the map of flash messages"
+
+  attr :current_scope, :map,
+    default: nil,
+    doc: "the current [scope](https://hexdocs.pm/phoenix/scopes.html)"
+
+  slot :inner_block, required: true
+  attr :current_user, :any, default: nil, doc: "the current authenticated user"
+  attr :title, :string, required: true
+  attr :description, :string, required: true
+
+  def auth(assigns) do
+    ~H"""
+    <.app flash={@flash}>
+      <div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-md w-full bg-white rounded-xl shadow-lg p-8">
+          <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">{@title}</h1>
+            <p class="mt-2 text-gray-600">{@description}</p>
+          </div>
+          {render_slot(@inner_block)}
+        </div>
+      </div>
+    </.app>
     """
   end
 

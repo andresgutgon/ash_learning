@@ -22,7 +22,7 @@ defmodule AshLearning.Accounts.User.Senders.SendPasswordResetEmail do
   end
 
   defp body(params) do
-    url = url(~p"/password-reset/#{params[:token]}")
+    url = url(~p"/reset-password/#{params[:token]}/edit")
 
     """
     <p>Click this link to reset your password:</p>

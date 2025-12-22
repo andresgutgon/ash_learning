@@ -8,8 +8,9 @@ defmodule AshLearning.Accounts.UserIdentity.Actions.Disconnect do
   def run(input, _opts, _context) do
     user_id = input.arguments.user_id
     provider = input.arguments.provider
+    uid = input.arguments.uid
 
-    case find_identity(user_id, provider) do
+    case find_identity(user_id, provider, uid) do
       {:ok, nil} ->
         {:ok, :not_found}
 
@@ -22,9 +23,9 @@ defmodule AshLearning.Accounts.UserIdentity.Actions.Disconnect do
     end
   end
 
-  defp find_identity(user_id, provider) do
+  defp find_identity(user_id, provider, uid) do
     AshLearning.Accounts.UserIdentity
-    |> Ash.Query.filter(user_id: user_id, strategy: provider)
+    |> Ash.Query.filter(user_id: user_id, strategy: provider, uid: uid)
     |> Ash.read_one(domain: AshLearning.Accounts)
   end
 end
