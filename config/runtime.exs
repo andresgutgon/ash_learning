@@ -23,6 +23,22 @@ end
 config :ash_learning, AshLearningWeb.Endpoint,
   http: [port: String.to_integer(System.get_env("PORT", "4000"))]
 
+# Configure hosts from environment variables (used by Inertia.js and URL generation)
+# PHX_HOST is the standard Phoenix convention for the main host
+phx_host = System.get_env("PHX_HOST")
+app_host = System.get_env("APP_HOST")
+
+config :ash_learning, AshLearningWeb,
+  main_host: phx_host,
+  app_host: app_host,
+  site_url: "https://#{phx_host}",
+  app_url: "https://#{app_host}"
+
+# Configure endpoint URL for link generation (emails, etc.)
+config :ash_learning, AshLearningWeb.Endpoint,
+  url: [host: phx_host, scheme: "https", port: 443],
+  force_ssl: [hsts: true]
+
 if config_env() == :prod do
   database_url =
     System.get_env("DATABASE_URL") ||
@@ -72,38 +88,6 @@ if config_env() == :prod do
     token_signing_secret:
       System.get_env("TOKEN_SIGNING_SECRET") ||
         raise("Missing environment variable `TOKEN_SIGNING_SECRET`!")
-
-  # ## SSL Support
-  #
-  # To get SSL working, you will need to add the `https` key
-  # to your endpoint configuration:
-  #
-  #     config :ash_learning, AshLearningWeb.Endpoint,
-  #       https: [
-  #         ...,
-  #         port: 443,
-  #         cipher_suite: :strong,
-  #         keyfile: System.get_env("SOME_APP_SSL_KEY_PATH"),
-  #         certfile: System.get_env("SOME_APP_SSL_CERT_PATH")
-  #       ]
-  #
-  # The `cipher_suite` is set to `:strong` to support only the
-  # latest and more secure SSL ciphers. This means old browsers
-  # and clients may not be supported. You can set it to
-  # `:compatible` for wider support.
-  #
-  # `:keyfile` and `:certfile` expect an absolute path to the key
-  # and cert in disk or a relative path inside priv, for example
-  # "priv/ssl/server.key". For all supported SSL configuration
-  # options, see https://hexdocs.pm/plug/Plug.SSL.html#configure/1
-  #
-  # We also recommend setting `force_ssl` in your config/prod.exs,
-  # ensuring no data is ever sent via http, always redirecting to https:
-  #
-  #     config :ash_learning, AshLearningWeb.Endpoint,
-  #       force_ssl: [hsts: true]
-  #
-  # Check `Plug.SSL` for all available options in `force_ssl`.
 
   # ## Configuring the mailer
   #
