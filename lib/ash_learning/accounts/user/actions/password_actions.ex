@@ -35,7 +35,7 @@ defmodule AshLearning.Accounts.User.Actions.PasswordActions do
       end
 
       change set_attribute(:email, arg(:email))
-      change AshAuthentication.Strategy.Password.HashPasswordChange
+      change {AshAuthentication.Strategy.Password.HashPasswordChange, strategy_name: :password}
       change AshAuthentication.GenerateTokenChange
       change AshAuthentication.Strategy.RememberMe.MaybeGenerateTokenChange
 

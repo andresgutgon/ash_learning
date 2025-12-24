@@ -1,45 +1,61 @@
 import Config
 
-# config/runtime.exs is executed for all environments, including
-# during releases. It is executed after compilation and before the
-# system starts, so it is typically used to load production configuration
-# and secrets from environment variables or elsewhere. Do not define
-# any compile-time configuration in here, as it won't be applied.
-# The block below contains prod specific runtime configuration.
+env = config_env()
+dev_mode = env == :dev
+prod_mode = env == :prod
+test_dev_mode = env == :test and System.get_env("CI") != "true"
 
-# ## Using releases
-#
-# If you use `mix release`, you need to explicitly enable the server
-# by passing the PHX_SERVER=true when you start it:
-#
-#     PHX_SERVER=true bin/ash_learning start
-#
-# Alternatively, you can use `mix phx.gen.release` to generate a `bin/server`
-# script that automatically sets the env var above.
-if System.get_env("PHX_SERVER") do
-  config :ash_learning, AshLearningWeb.Endpoint, server: true
-end
+config :ash_learning,
+  env: env,
+  dev_mode: dev_mode,
+  prod_mode: prod_mode,
+  test_dev_mode: test_dev_mode
+
+# GitHub OAuth Configuration
+# Make sure to set these environment variables or source .env.development
+config :ash_learning, :github,
+  client_id: System.get_env("GITHUB_CLIENT_ID"),
+  client_secret: System.get_env("GITHUB_CLIENT_SECRET"),
+  redirect_uri: System.get_env("GITHUB_REDIRECT_URI")
+
+config :ash_learning, :google,
+  client_id: System.get_env("GOOGLE_CLIENT_ID"),
+  client_secret: System.get_env("GOOGLE_CLIENT_SECRET"),
+  redirect_uri: System.get_env("GOOGLE_REDIRECT_URI")
+
+config :ash_learning, Inertia.SSR,
+  path: Path.join([Application.app_dir(:ash_learning), "priv", "ssr-js"]),
+  ssr_adapter: Vitex.inertia_ssr_adapter(dev_mode: dev_mode or test_dev_mode),
+  esm: true
+
+# The secret key base is used to sign/encrypt cookies and other secrets.
+# A default value is used in config/dev.exs and config/test.exs but you
+# want to use a different value for prod and you most likely don't want
+# to check this value into version control, so we use an environment
+# variable instead.
+secret_key_base =
+  System.get_env("SECRET_KEY_BASE") ||
+    raise """
+    environment variable SECRET_KEY_BASE is missing.
+    You can generate one by calling: mix phx.gen.secret
+    """
+
+config :ash_learning, :dns_cluster_query, System.get_env("DNS_CLUSTER_QUERY")
 
 config :ash_learning, AshLearningWeb.Endpoint,
-  http: [port: String.to_integer(System.get_env("PORT", "4000"))]
-
-# Configure hosts from environment variables (used by Inertia.js and URL generation)
-# PHX_HOST is the standard Phoenix convention for the main host
-phx_host = System.get_env("PHX_HOST")
-app_host = System.get_env("APP_HOST")
-
-config :ash_learning, AshLearningWeb,
-  main_host: phx_host,
-  app_host: app_host,
-  site_url: "https://#{phx_host}",
-  app_url: "https://#{app_host}"
-
-# Configure endpoint URL for link generation (emails, etc.)
-config :ash_learning, AshLearningWeb.Endpoint,
-  url: [host: phx_host, scheme: "https", port: 443],
-  force_ssl: [hsts: true]
+  url: [host: System.get_env("PHX_HOST"), scheme: "https", port: 443],
+  http: [
+    # Enable IPv6 and bind on all interfaces.
+    # Set it to  {0, 0, 0, 0, 0, 0, 0, 1} for local network only access.
+    # See the documentation on https://hexdocs.pm/bandit/Bandit.html#t:options/0
+    # for details about using IPv6 vs IPv4 and loopback vs public addresses.
+    ip: {0, 0, 0, 0, 0, 0, 0, 0}
+  ],
+  secret_key_base: secret_key_base
 
 if config_env() == :prod do
+  # force_ssl is set at compile-time in prod.exs, but we need hsts at runtime too
+  config :ash_learning, AshLearningWeb.Endpoint, force_ssl: [hsts: true]
   database_url =
     System.get_env("DATABASE_URL") ||
       raise """
@@ -56,33 +72,6 @@ if config_env() == :prod do
     # For machines with several cores, consider starting multiple pools of `pool_size`
     # pool_count: 4,
     socket_options: maybe_ipv6
-
-  # The secret key base is used to sign/encrypt cookies and other secrets.
-  # A default value is used in config/dev.exs and config/test.exs but you
-  # want to use a different value for prod and you most likely don't want
-  # to check this value into version control, so we use an environment
-  # variable instead.
-  secret_key_base =
-    System.get_env("SECRET_KEY_BASE") ||
-      raise """
-      environment variable SECRET_KEY_BASE is missing.
-      You can generate one by calling: mix phx.gen.secret
-      """
-
-  host = System.get_env("PHX_HOST") || "example.com"
-
-  config :ash_learning, :dns_cluster_query, System.get_env("DNS_CLUSTER_QUERY")
-
-  config :ash_learning, AshLearningWeb.Endpoint,
-    url: [host: host, port: 443, scheme: "https"],
-    http: [
-      # Enable IPv6 and bind on all interfaces.
-      # Set it to  {0, 0, 0, 0, 0, 0, 0, 1} for local network only access.
-      # See the documentation on https://hexdocs.pm/bandit/Bandit.html#t:options/0
-      # for details about using IPv6 vs IPv4 and loopback vs public addresses.
-      ip: {0, 0, 0, 0, 0, 0, 0, 0}
-    ],
-    secret_key_base: secret_key_base
 
   config :ash_learning,
     token_signing_secret:

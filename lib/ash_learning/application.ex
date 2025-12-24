@@ -1,28 +1,37 @@
 defmodule AshLearning.Application do
-  # See https://hexdocs.pm/elixir/Application.html
-  # for more information on OTP Applications
   @moduledoc false
 
   use Application
 
   @impl true
   def start(_type, _args) do
+    dev_mode = Application.get_env(:ash_learning, :dev_mode)
+    dev_test_mode = Application.get_env(:ash_learning, :test_dev_mode)
+
     children = [
       AshLearningWeb.Telemetry,
       AshLearning.Repo,
       {DNSCluster, query: Application.get_env(:ash_learning, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: AshLearning.PubSub},
-      # Start a worker by calling: AshLearning.Worker.start_link(arg)
-      # {AshLearning.Worker, arg},
-      # Start to serve requests, typically the last entry
       AshLearningWeb.Endpoint,
-      {AshAuthentication.Supervisor, [otp_app: :ash_learning]}
+      {AshAuthentication.Supervisor, [otp_app: :ash_learning]},
+      {Vitex,
+       dev_mode: dev_mode or dev_test_mode,
+       endpoint: AshLearningWeb.Endpoint,
+       vite_host: "https://#{System.get_env("VITE_HOST")}",
+       js_framework: :react,
+       manifest_name: "vite_manifest"},
+      {Inertia.SSR, Application.fetch_env!(:ash_learning, Inertia.SSR)}
     ]
 
-    # See https://hexdocs.pm/elixir/Supervisor.html
-    # for other strategies and supported options
-    opts = [strategy: :one_for_one, name: AshLearning.Supervisor]
-    Supervisor.start_link(children, opts)
+    children =
+      if dev_mode do
+        children ++ [{Wayfinder.RoutesWatcher, []}]
+      else
+        children
+      end
+
+    Supervisor.start_link(children, strategy: :one_for_one, name: AshLearning.Supervisor)
   end
 
   # Tell Phoenix to update the endpoint configuration

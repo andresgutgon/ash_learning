@@ -4,7 +4,7 @@ defmodule AshLearning.Accounts.User.Senders.SendMagicLinkEmail do
   """
 
   use AshAuthentication.Sender
-  use AshLearningWeb, :verified_routes
+  use AshLearningWeb.AppUrl
 
   import Swoosh.Email
   alias AshLearning.Mailer
@@ -30,9 +30,11 @@ defmodule AshLearning.Accounts.User.Senders.SendMagicLinkEmail do
   end
 
   defp body(params) do
+    url = app_url(~p"/magic-link/#{params[:token]}/edit")
+
     """
     <p>Hi, #{params[:email]}! Click this link to sign in:</p>
-    <p><a href="#{url(~p"/magic-link/#{params[:token]}/edit")}">#{url(~p"/magic-link/#{params[:token]}")}</a></p>
+    <p><a href="#{url}">#{url}</a></p>
     """
   end
 end
