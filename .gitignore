@@ -25,6 +25,7 @@ priv/node_modules
 .env
 .env.*
 *.*-E
+.nfs.*
 
 docker/dev-certificates/key.pem
 docker/dev-certificates/cert.pem
