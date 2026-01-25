@@ -186,4 +186,6 @@ defmodule AshLearningWeb.Layouts do
     </div>
     """
   end
+
+  def dev_mode?, do: Application.get_env(:ash_learning, :dev_mode)
 end

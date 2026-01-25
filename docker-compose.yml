@@ -24,6 +24,7 @@ services:
       - ash_learning_network
 
   web:
+    container_name: ash_learning
     build:
       context: .
       dockerfile: docker/Dockerfile
@@ -58,12 +59,14 @@ services:
       - "traefik.http.routers.vite.tls=true"
 
     volumes:
-      - .:/ash_learning
+      - ash_learning_src:/ash_learning
       - ./deps:/ash_learning/deps
       - node_modules_container:/ash_learning/assets/node_modules
       - /Users/andres/code/opensource/inertia-phoenix:/inertia-phoenix
-      - /Users/andres/code/opensource/ash_authentication_phoenix:/Users/andres/code/opensource/ash_authentication_phoenix
+      - /Users/andres/code/opensource/ash_authentication_phoenix:/ash_authentication_phoenix
+      - /Users/andres/code/opensource/wayfinder:/wayfinder
       - ~/.iex_history:/root/.iex_history
+    working_dir: /ash_learning
     depends_on:
       - db
       - mailpit
@@ -72,6 +75,7 @@ services:
     environment:
       - MIX_ENV=dev
       - CHOKIDAR_USEPOLLING=true # Fix for file watching in Docker
+      - CHOKIDAR_INTERVAL=100
       - MAILPIT_SMTP_HOST=ash_learning_mailpit
       - MAILPIT_SMTP_PORT=1025
       - ERL_AFLAGS=-kernel shell_history enabled -kernel shell_history_path '"/root/.iex_history"'
@@ -106,6 +110,7 @@ services:
 volumes:
   node_modules_container:
   postgres_data:
+  ash_learning_src:
 
 networks:
   ash_learning_network:

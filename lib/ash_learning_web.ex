@@ -45,6 +45,26 @@ defmodule AshLearningWeb do
       import Plug.Conn
 
       unquote(verified_routes())
+      import Inertia.Controller
+
+      def get_referer_path(conn, fallback \\ "/") do
+        case get_req_header(conn, "referer") |> List.first() do
+          nil ->
+            fallback
+
+          referer ->
+            case URI.parse(referer) do
+              %URI{path: path, query: nil} when is_binary(path) ->
+                path
+
+              %URI{path: path, query: query} when is_binary(path) and is_binary(query) ->
+                path <> "?" <> query
+
+              _ ->
+                fallback
+            end
+        end
+      end
     end
   end
 
@@ -74,6 +94,8 @@ defmodule AshLearningWeb do
 
       # Include general helpers for rendering HTML
       unquote(html_helpers())
+      import Inertia.HTML
+      import Vitex.HTML
     end
   end
 
@@ -86,8 +108,6 @@ defmodule AshLearningWeb do
       import Phoenix.HTML
       # Core UI components
       import AshLearningWeb.CoreComponents
-      import AshLearningWeb.ProviderIcons
-      import AshLearningWeb.AuthComponents
 
       # Common modules used in templates
       alias Phoenix.LiveView.JS

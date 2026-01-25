@@ -23,7 +23,7 @@ RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
     && apt-get install -y nodejs
 
 # Install pnpm standalone
-ARG PNPM_VERSION=10.24.0
+ARG PNPM_VERSION=10.26.0
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN curl -fsSL https://get.pnpm.io/install.sh | env PNPM_VERSION=${PNPM_VERSION} SHELL="$(which sh)" sh - || true \
@@ -46,7 +46,7 @@ ARG MAILPIT_SMTP_PORT=1025
 ENV MAILPIT_SMTP_PORT=${MAILPIT_SMTP_PORT}
 
 RUN mix deps.get
-RUN pnpm install --prefix ./assets
+RUN CI=true pnpm install --prefix ./assets
 
 EXPOSE 4004
 CMD ["mix", "phx.server"]

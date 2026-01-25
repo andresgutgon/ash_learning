@@ -4,7 +4,7 @@ defmodule AshLearning.Accounts.User.Senders.SendPasswordResetEmail do
   """
 
   use AshAuthentication.Sender
-  use AshLearningWeb, :verified_routes
+  use AshLearningWeb.AppUrl
 
   import Swoosh.Email
 
@@ -22,7 +22,7 @@ defmodule AshLearning.Accounts.User.Senders.SendPasswordResetEmail do
   end
 
   defp body(params) do
-    url = url(~p"/reset-password/#{params[:token]}/edit")
+    url = app_url(~p"/reset-password/#{params[:token]}/edit")
 
     """
     <p>Click this link to reset your password:</p>

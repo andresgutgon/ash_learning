@@ -11,6 +11,10 @@ defmodule AshLearning.Accounts.User.Actions.MagicLinkActions do
         allow_nil? false
       end
 
+      validate match(:email, ~r/^[^\s@]+@[^\s@]+\.[^\s@]+$/) do
+        message "must be a valid email address"
+      end
+
       run AshAuthentication.Strategy.MagicLink.Request
     end
 
