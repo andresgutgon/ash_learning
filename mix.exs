@@ -63,7 +63,7 @@ defmodule AshLearning.MixProject do
       {:bandit, "~> 1.5"},
       {:wayfinder_ex, "~> 0.1.6"},
       {:inertia, path: "/inertia-phoenix", override: true},
-      {:vitex, git: "https://github.com/andresgutgon/vitex.git", branch: "main"}
+      {:vitex, path: "/vitex", override: true},
     ]
   end
 

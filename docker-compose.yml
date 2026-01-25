@@ -8,7 +8,7 @@ services:
       - --entrypoints.web.http.redirections.entrypoint.scheme=https
       - --api.insecure=true
       - --providers.docker=true
-      - --providers.file.filename=/etc/traefik/dynamic.yml
+      - --providers.file.filename=/src/docker/dev-certificates/dynamic.yml
       - --providers.file.watch=true
     ports:
       - "80:80"
@@ -16,8 +16,7 @@ services:
       - "8080:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./docker/dev-certificates:/certs
-      - ./docker/dev-certificates/dynamic.yml:/etc/traefik/dynamic.yml
+      - ash_learning_src:/src:ro
     env_file:
       - .env.development
     networks:
@@ -59,12 +58,22 @@ services:
       - "traefik.http.routers.vite.tls=true"
 
     volumes:
+      # Source code
       - ash_learning_src:/ash_learning
-      - ./deps:/ash_learning/deps
+
+      # Dependencies and build artifacts
+      - ash_learning_deps:/ash_learning/deps
+      - ash_learning_build:/ash_learning/_build
+      - node_modules_container:/ash_learning/assets/node_modules
+
+      # Local development packages
       - node_modules_container:/ash_learning/assets/node_modules
       - /Users/andres/code/opensource/inertia-phoenix:/inertia-phoenix
       - /Users/andres/code/opensource/ash_authentication_phoenix:/ash_authentication_phoenix
       - /Users/andres/code/opensource/wayfinder:/wayfinder
+      - /Users/andres/code/opensource/vitex:/vitex
+
+      # IEx history
       - ~/.iex_history:/root/.iex_history
     working_dir: /ash_learning
     depends_on:
@@ -106,9 +115,11 @@ services:
       - ash_learning_network
 
 volumes:
-  node_modules_container:
   postgres_data:
+  node_modules_container:
   ash_learning_src:
+  ash_learning_deps:
+  ash_learning_build:
 
 networks:
   ash_learning_network:
