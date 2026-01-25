@@ -74,8 +74,6 @@ services:
       - .env.development
     environment:
       - MIX_ENV=dev
-      - CHOKIDAR_USEPOLLING=true # Fix for file watching in Docker
-      - CHOKIDAR_INTERVAL=100
       - MAILPIT_SMTP_HOST=ash_learning_mailpit
       - MAILPIT_SMTP_PORT=1025
       - ERL_AFLAGS=-kernel shell_history enabled -kernel shell_history_path '"/root/.iex_history"'
