@@ -3,24 +3,28 @@ config :ash_learning, token_signing_secret: "jGuPrTa+tduE7obfw5Vfz5oDNJcxFtY1"
 config :bcrypt_elixir, log_rounds: 1
 config :ash, policies: [show_policy_breakdowns?: true], disable_async?: true
 
+# Test hosts for router host constraints
+config :ash_learning, AshLearningWeb,
+  main_host: "www.example.com",
+  app_host: "app.example.com",
+  site_url: "https://www.example.com",
+  app_url: "https://app.example.com"
+
 # Configure your database
 #
 # The MIX_TEST_PARTITION environment variable can be used
 # to provide built-in test partitioning in CI environment.
 # Run `mix help test` for more information.
 config :ash_learning, AshLearning.Repo,
-  username: "postgres",
-  password: "postgres",
-  hostname: "localhost",
+  username: System.get_env("DB_USER") || "postgres",
+  password: System.get_env("DB_PASSWORD") || "postgres",
+  hostname: System.get_env("DB_HOST") || "localhost",
   database: "ash_learning_test#{System.get_env("MIX_TEST_PARTITION")}",
   pool: Ecto.Adapters.SQL.Sandbox,
   pool_size: System.schedulers_online() * 2
 
-# We don't run a server during test. If one is required,
-# you can enable the server option below.
 config :ash_learning, AshLearningWeb.Endpoint,
   http: [ip: {127, 0, 0, 1}, port: 4002],
-  secret_key_base: "IgXW6VRDQ83sLo9WANRS1gjMjT0gZ5gUFYbzcRuaZ4RRNPJWBCgxvbPylKp6NV+a",
   server: false
 
 # In test we don't send emails

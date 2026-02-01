@@ -13,9 +13,9 @@ defmodule AshLearningWeb.Auth do
     router: AshLearningWeb.Router,
     statics: AshLearningWeb.static_paths()
 
-  alias AshLearning.Accounts.User
   alias AshAuthentication.{Info, Strategy}
   alias AshAuthentication.Plug.Helpers, as: AshAuthHelpers
+  alias AshLearning.Accounts.User
 
   @doc """
   Stores the user in the session.

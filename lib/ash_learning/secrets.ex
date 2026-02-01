@@ -1,4 +1,5 @@
 defmodule AshLearning.Secrets do
+  @moduledoc false
   use AshAuthentication.Secret
 
   def secret_for(

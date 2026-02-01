@@ -1,7 +1,8 @@
-import { ReactNode } from "react";
-import { Form } from "@inertiajs/react";
-import { update } from "@/actions/Auth/ResetPasswordsController";
-import AuthLayout from "@/Layouts/AuthLayout";
+import { Form } from '@inertiajs/react'
+import { ReactNode } from 'react'
+
+import { update } from '@/actions/Auth/ResetPasswordsController'
+import AuthLayout from '@/Layouts/AuthLayout'
 
 function ResetPasswordEditPage({ reset_token }: { reset_token: string }) {
   return (
@@ -27,18 +28,14 @@ function ResetPasswordEditPage({ reset_token }: { reset_token: string }) {
             </div>
 
             <div>
-              <label htmlFor="password_confirmation">
-                Confirm new password
-              </label>
+              <label htmlFor="password_confirmation">Confirm new password</label>
               <input
                 type="password"
                 id="password_confirmation"
                 name="password_confirmation"
                 placeholder="Confirm your new password"
               />
-              {errors.password_confirmation && (
-                <p>{errors.password_confirmation}</p>
-              )}
+              {errors.password_confirmation && <p>{errors.password_confirmation}</p>}
             </div>
 
             <button type="submit" disabled={processing}>
@@ -48,11 +45,11 @@ function ResetPasswordEditPage({ reset_token }: { reset_token: string }) {
         )}
       </Form>
     </>
-  );
+  )
 }
 
 ResetPasswordEditPage.layout = (children: ReactNode) => (
   <AuthLayout title="Reset Password">{children}</AuthLayout>
-);
+)
 
-export default ResetPasswordEditPage;
+export default ResetPasswordEditPage

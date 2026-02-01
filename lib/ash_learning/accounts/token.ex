@@ -1,4 +1,5 @@
 defmodule AshLearning.Accounts.Token do
+  @moduledoc false
   use Ash.Resource,
     otp_app: :ash_learning,
     domain: AshLearning.Accounts,

@@ -1,5 +1,8 @@
 # AshLearning
 
+[![Backend CI](https://github.com/andresgutgon/ash_learning/actions/workflows/backend-ci.yml/badge.svg)](https://github.com/andresgutgon/ash_learning/actions/workflows/backend-ci.yml)
+[![Frontend CI](https://github.com/andresgutgon/ash_learning/actions/workflows/frontend-ci.yml/badge.svg)](https://github.com/andresgutgon/ash_learning/actions/workflows/frontend-ci.yml)
+
 To start your Phoenix server:
 
 * Run `mix setup` to install and setup dependencies

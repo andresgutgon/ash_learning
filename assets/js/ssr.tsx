@@ -1,6 +1,7 @@
-import ReactDOMServer from 'react-dom/server'
-import { createInertiaApp } from '@inertiajs/react'
 import type { Page } from '@inertiajs/core'
+import { createInertiaApp } from '@inertiajs/react'
+import ReactDOMServer from 'react-dom/server'
+
 import { resolvePage } from '@/lib/pageHelpers'
 
 export async function render(page: Page) {

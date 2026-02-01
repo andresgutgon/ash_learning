@@ -1,10 +1,11 @@
-import { ReactNode } from "react";
-import { Form, Link } from "@inertiajs/react";
-import AuthLayout from "@/Layouts/AuthLayout";
-import { login } from "@/actions/Auth/SessionsController";
-import { create as register } from "@/actions/Auth/RegisterController";
-import { OAuthProvider } from "@/types";
-import { MagicLinkForm } from "@/components/Auth/MagicLinkForm";
+import { Form, Link } from '@inertiajs/react'
+import { ReactNode } from 'react'
+
+import { create as register } from '@/actions/Auth/RegisterController'
+import { login } from '@/actions/Auth/SessionsController'
+import { MagicLinkForm } from '@/components/Auth/MagicLinkForm'
+import AuthLayout from '@/Layouts/AuthLayout'
+import { OAuthProvider } from '@/types'
 
 /**
  * TODO: Use Inertia.js `<Form />`
@@ -13,8 +14,8 @@ function RegisterPage({
   return_to,
   oauth_providers,
 }: {
-  return_to: string;
-  oauth_providers: OAuthProvider[];
+  return_to: string
+  oauth_providers: OAuthProvider[]
 }) {
   return (
     <>
@@ -61,9 +62,7 @@ function RegisterPage({
                 autoComplete="new-password"
                 placeholder="Confirm your password"
               />
-              {errors.password_confirmation && (
-                <p>{errors.password_confirmation}</p>
-              )}
+              {errors.password_confirmation && <p>{errors.password_confirmation}</p>}
             </div>
 
             <button type="submit" disabled={processing}>
@@ -95,11 +94,9 @@ function RegisterPage({
 
       <MagicLinkForm returnTo={return_to} />
     </>
-  );
+  )
 }
 
-RegisterPage.layout = (children: ReactNode) => (
-  <AuthLayout title="Register">{children}</AuthLayout>
-);
+RegisterPage.layout = (children: ReactNode) => <AuthLayout title="Register">{children}</AuthLayout>
 
-export default RegisterPage;
+export default RegisterPage

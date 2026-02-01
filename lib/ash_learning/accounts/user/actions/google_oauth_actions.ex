@@ -5,9 +5,9 @@ defmodule AshLearning.Accounts.User.Actions.GoogleOAuthActions do
   alias AshAuthentication.Strategy.OAuth2
 
   alias AshLearning.Accounts.User.Changes.{
+    RequireConfirmedUser,
     SetEmailFromUserInfo,
-    UpdateIdentityInfo,
-    RequireConfirmedUser
+    UpdateIdentityInfo
   }
 
   use Spark.Dsl.Fragment, of: Ash.Resource

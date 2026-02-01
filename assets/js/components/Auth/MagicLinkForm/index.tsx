@@ -1,12 +1,13 @@
-import { Form } from "@inertiajs/react";
-import { create as magicLink } from "@/actions/Auth/MagicLinkController";
+import { Form } from '@inertiajs/react'
+
+import { create as magicLink } from '@/actions/Auth/MagicLinkController'
 
 export function MagicLinkForm({ returnTo }: { returnTo: string }) {
   return (
     <Form action={magicLink()}>
       {({ errors, processing }) => (
         <>
-        <input type="hidden" name="return_to" value={returnTo} />
+          <input type="hidden" name="return_to" value={returnTo} />
           <div>
             <label htmlFor="magic-link-email">Email address</label>
             <input
@@ -24,5 +25,5 @@ export function MagicLinkForm({ returnTo }: { returnTo: string }) {
         </>
       )}
     </Form>
-  );
+  )
 }

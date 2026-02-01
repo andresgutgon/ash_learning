@@ -1,5 +1,5 @@
-import { ReactNode, ComponentType } from 'react'
 import { PageProps } from '@inertiajs/core'
+import { ReactNode, ComponentType } from 'react'
 
 type PageModule = {
   default: ComponentType<PageProps> & {

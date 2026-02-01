@@ -17,6 +17,8 @@ defmodule AshLearningWeb.ConnCase do
 
   use ExUnit.CaseTemplate
 
+  @hosts Application.compile_env(:ash_learning, AshLearningWeb, [])
+
   using do
     quote do
       # The default endpoint for testing
@@ -31,8 +33,32 @@ defmodule AshLearningWeb.ConnCase do
     end
   end
 
+  @doc """
+  Builds a connection with the main host (public site).
+  """
+  def build_main_conn do
+    conn = Phoenix.ConnTest.build_conn()
+    %{conn | host: @hosts[:main_host] || "localhost"}
+  end
+
+  @doc """
+  Builds a connection with the app host (authenticated app).
+  """
+  def build_app_conn do
+    conn = Phoenix.ConnTest.build_conn()
+    %{conn | host: @hosts[:app_host] || "localhost"}
+  end
+
   setup tags do
     AshLearning.DataCase.setup_sandbox(tags)
-    {:ok, conn: Phoenix.ConnTest.build_conn()}
+
+    conn =
+      case tags[:host] do
+        :main -> build_main_conn()
+        :app -> build_app_conn()
+        _ -> Phoenix.ConnTest.build_conn()
+      end
+
+    {:ok, conn: conn}
   end
 end
