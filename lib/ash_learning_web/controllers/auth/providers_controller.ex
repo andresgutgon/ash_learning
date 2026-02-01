@@ -7,7 +7,10 @@ defmodule AshLearningWeb.Auth.ProvidersController do
     case disconnect_identity(current_user, provider, uid) do
       {:ok, _} ->
         conn
-        |> put_flash(:info, "#{provider_display_name(provider)} account disconnected successfully!")
+        |> put_flash(
+          :info,
+          "#{provider_display_name(provider)} account disconnected successfully!"
+        )
         |> redirect(to: ~p"/dashboard")
 
       {:error, _reason} ->

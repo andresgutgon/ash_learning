@@ -106,12 +106,10 @@ defmodule AshLearningWeb do
 
       # HTML escaping functionality
       import Phoenix.HTML
-      # Core UI components
-      import AshLearningWeb.CoreComponents
 
       # Common modules used in templates
-      alias Phoenix.LiveView.JS
       alias AshLearningWeb.Layouts
+      alias Phoenix.LiveView.JS
 
       # Routes generation with the ~p sigil
       unquote(verified_routes())

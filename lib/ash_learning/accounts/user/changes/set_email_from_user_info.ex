@@ -13,8 +13,8 @@ defmodule AshLearning.Accounts.User.Changes.SetEmailFromUserInfo do
   """
   use Ash.Resource.Change
 
-  alias AshLearning.Accounts.UserIdentity
   alias AshLearning.Accounts.User.Changes.OAuthHelpers
+  alias AshLearning.Accounts.UserIdentity
 
   require Ash.Query
 

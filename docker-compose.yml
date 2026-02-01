@@ -66,12 +66,11 @@ services:
       - ash_learning_build:/ash_learning/_build
       - node_modules_container:/ash_learning/assets/node_modules
 
-      # Local development packages
       - node_modules_container:/ash_learning/assets/node_modules
-      - /Users/andres/code/opensource/inertia-phoenix:/inertia-phoenix
-      - /Users/andres/code/opensource/ash_authentication_phoenix:/ash_authentication_phoenix
-      - /Users/andres/code/opensource/wayfinder:/wayfinder
-      - /Users/andres/code/opensource/vitex:/vitex
+      - /Users/andres/code/opensource/inertia-phoenix:/ash_learning/vendor/inertia-phoenix
+      - /Users/andres/code/opensource/ash_authentication_phoenix:/ash_learning/vendor/ash_authentication_phoenix
+      - /Users/andres/code/opensource/wayfinder:/ash_learning/vendor/wayfinder
+      - /Users/andres/code/opensource/vitex:/ash_learning/vendor/vitex
 
       # IEx history
       - ~/.iex_history:/root/.iex_history
@@ -83,6 +82,9 @@ services:
       - .env.development
     environment:
       - MIX_ENV=dev
+      - DB_HOST=db
+      - DB_USER=ash_learning
+      - DB_PASSWORD=secret
       - MAILPIT_SMTP_HOST=ash_learning_mailpit
       - MAILPIT_SMTP_PORT=1025
       - ERL_AFLAGS=-kernel shell_history enabled -kernel shell_history_path '"/root/.iex_history"'

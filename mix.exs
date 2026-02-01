@@ -12,7 +12,11 @@ defmodule AshLearning.MixProject do
       deps: deps(),
       compilers: [:phoenix_live_view] ++ Mix.compilers(),
       listeners: [Phoenix.CodeReloader],
-      consolidate_protocols: Mix.env() != :dev
+      consolidate_protocols: Mix.env() != :dev,
+      dialyzer: [
+        plt_local_path: "priv/plts",
+        plt_core_path: "priv/plts"
+      ]
     ]
   end
 
@@ -38,7 +42,9 @@ defmodule AshLearning.MixProject do
       {:picosat_elixir, "~> 0.2"},
       {:sourceror, "~> 1.8", only: [:dev, :test]},
       {:usage_rules, "~> 0.1", only: [:dev]},
-      {:ash_authentication_phoenix, path: "/ash_authentication_phoenix"},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
+      {:ash_authentication_phoenix, path: "vendor/ash_authentication_phoenix"},
       {:ash_authentication, "~> 4.0"},
       {:ash_postgres, "~> 2.0"},
       {:ash_phoenix, "~> 2.0"},
@@ -62,8 +68,8 @@ defmodule AshLearning.MixProject do
       {:dns_cluster, "~> 0.2.0"},
       {:bandit, "~> 1.5"},
       {:wayfinder_ex, "~> 0.1.6"},
-      {:inertia, path: "/inertia-phoenix", override: true},
-      {:vitex, path: "/vitex", override: true},
+      {:inertia, path: "vendor/inertia-phoenix", override: true},
+      {:vitex, path: "vendor/vitex", override: true}
     ]
   end
 

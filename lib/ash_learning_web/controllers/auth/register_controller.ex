@@ -1,9 +1,9 @@
 defmodule AshLearningWeb.Auth.RegisterController do
   use AshLearningWeb, :controller
 
-  alias AshLearningWeb.Auth, as: AuthHelpers
-  alias AshLearning.Accounts
   alias AshAuthentication.{Info, Strategy}
+  alias AshLearning.Accounts
+  alias AshLearningWeb.Auth, as: AuthHelpers
 
   def index(conn, params) do
     return_to = AuthHelpers.get_return_to(conn, params)

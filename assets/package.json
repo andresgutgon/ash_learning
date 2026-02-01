@@ -1,30 +1,32 @@
 {
   "name": "ash_learning_ui",
-  "author": "Andrés Gutiérrez",
   "version": "0.0.1",
   "private": true,
   "description": "Learning some Ash in combiantion with Inertia.js, Phoenix and TailwindCSS",
   "keywords": [
-    "phoenix",
-    "elixir",
     "ash",
+    "elixir",
+    "phoenix",
     "tailwindcss",
     "typescript",
     "vite"
   ],
+  "author": "Andrés Gutiérrez",
+  "type": "module",
   "scripts": {
+    "build": "pnpm run js:client:prod && pnpm run js:server:prod",
     "dev": "vite --host 0.0.0.0 --mode development",
+    "fmt": "oxfmt .",
+    "fmt:check": "oxfmt --check .",
     "js:client:prod": "NODE_ENV=production vite build --mode production",
     "js:server:prod": "NODE_ENV=production VITE_SSR=true vite build --mode production",
-    "build": "pnpm run js:client:prod && pnpm run js:server:prod",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
     "tc": "tsc --noEmit -p tsconfig.app.json"
   },
-  "packageManager": "pnpm@10.24.0",
-  "type": "module",
   "dependencies": {
     "@inertiajs/core": "^2.3.4",
     "@inertiajs/react": "^2.3.4",
-    "@tailwindcss/vite": "^4.1.18",
     "axios": "1.13.2",
     "phoenix": "^1.8.2",
     "react": "^19.2.0",
@@ -32,13 +34,17 @@
     "tailwindcss": "^4.1.18"
   },
   "devDependencies": {
+    "@tailwindcss/vite": "^4.1.18",
     "@types/node": "^25.0.3",
     "@types/phoenix": "1.6.7",
     "@types/react": "19.2.0",
     "@types/react-dom": "19.2.0",
     "@vitejs/plugin-react": "^5.1.2",
-    "globals": "^16.5.0",
+    "eslint-plugin-react-refresh": "^0.5.0",
+    "oxfmt": "^0.27.0",
+    "oxlint": "^1.42.0",
     "typescript": "^5.9.3",
-    "vite": "^7.2.7"
-  }
+    "vite": "8.0.0-beta.11"
+  },
+  "packageManager": "pnpm@10.24.0"
 }

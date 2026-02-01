@@ -56,6 +56,7 @@ config :ash_learning, AshLearningWeb.Endpoint,
 if config_env() == :prod do
   # force_ssl is set at compile-time in prod.exs, but we need hsts at runtime too
   config :ash_learning, AshLearningWeb.Endpoint, force_ssl: [hsts: true]
+
   database_url =
     System.get_env("DATABASE_URL") ||
       raise """

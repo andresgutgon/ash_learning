@@ -1,0 +1,108 @@
+name: Backend CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  DB_HOST: localhost
+  SECRET_KEY_BASE: "ci_only_test_secret_key_base_not_for_production_use_must_be_at_least_64_bytes_long!"
+  MIX_ENV: test
+  OTP_VERSION: "28.1.1"
+  ELIXIR_VERSION: "1.19.0"
+
+jobs:
+  # Compile once and cache. Other jobs (format, credo, dialyzer, test)
+  # run in parallel after this, restoring from cache.
+  #
+  #         ┌─────────┐
+  #         │ compile │
+  #         └────┬────┘
+  #              │
+  #    ┌─────────┼─────────┬──────────┐
+  #    ▼         ▼         ▼          ▼
+  # format    credo    dialyzer    test
+  #
+  compile:
+    name: Compile
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-elixir
+        with:
+          otp-version: ${{ env.OTP_VERSION }}
+          elixir-version: ${{ env.ELIXIR_VERSION }}
+          build: "true"
+
+  format:
+    name: Format
+    needs: compile
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-elixir
+        with:
+          otp-version: ${{ env.OTP_VERSION }}
+          elixir-version: ${{ env.ELIXIR_VERSION }}
+      - run: mix format --check-formatted
+
+  credo:
+    name: Credo
+    needs: compile
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-elixir
+        with:
+          otp-version: ${{ env.OTP_VERSION }}
+          elixir-version: ${{ env.ELIXIR_VERSION }}
+      - run: mix credo --strict
+
+  dialyzer:
+    name: Dialyzer
+    needs: compile
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-elixir
+        with:
+          otp-version: ${{ env.OTP_VERSION }}
+          elixir-version: ${{ env.ELIXIR_VERSION }}
+      - uses: actions/cache@v4
+        with:
+          path: priv/plts
+          key: plt-${{ runner.os }}-${{ env.OTP_VERSION }}-${{ env.ELIXIR_VERSION }}-${{ hashFiles('mix.lock') }}
+          restore-keys: plt-${{ runner.os }}-${{ env.OTP_VERSION }}-${{ env.ELIXIR_VERSION }}-
+      - run: mkdir -p priv/plts
+      - run: mix dialyzer --plt
+      - run: mix dialyzer
+
+  test:
+    name: Test
+    needs: compile
+    runs-on: ubuntu-latest
+    services:
+      db:
+        image: postgres:15
+        ports: ["5432:5432"]
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: ash_learning_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: ./.github/actions/setup-elixir
+        with:
+          otp-version: ${{ env.OTP_VERSION }}
+          elixir-version: ${{ env.ELIXIR_VERSION }}
+      - run: mix test

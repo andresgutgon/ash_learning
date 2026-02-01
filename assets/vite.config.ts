@@ -1,13 +1,13 @@
 import { resolve } from 'node:path'
-import { defineConfig, type ConfigEnv } from 'vite'
-import react from '@vitejs/plugin-react'
+
 import tailwindcss from '@tailwindcss/vite'
+import react from '@vitejs/plugin-react'
+import { defineConfig, type ConfigEnv } from 'vite'
+
 import vitexPlugin from '../deps/vitex/priv/vitejs/vitePlugin.js'
 
 const isSSR = process.env.VITE_SSR === 'true'
-const input: Record<string, string> = isSSR
-  ? { ssr: './js/ssr.tsx' }
-  : { app: './js/app.tsx' }
+const input: Record<string, string> = isSSR ? { ssr: './js/ssr.tsx' } : { app: './js/app.tsx' }
 
 /**
  * Vite runs under Traefik in development inside Docker.
@@ -23,10 +23,7 @@ function buildDevServerUrl(isDev: boolean) {
       host: process.env.VITE_HOST,
     },
     cors: {
-      origin: [
-        `https://${process.env.PHX_HOST}`,
-        `https://${process.env.APP_HOST}`,
-      ],
+      origin: [`https://${process.env.PHX_HOST}`, `https://${process.env.APP_HOST}`],
       credentials: true,
     },
   }
@@ -38,11 +35,7 @@ export default defineConfig(({ mode }: ConfigEnv) => {
 
   return {
     publicDir: 'static',
-    plugins: [
-      react(),
-      tailwindcss(),
-      vitexPlugin({ inertiaSSREntrypoint: './js/ssr.tsx' }),
-    ],
+    plugins: [react(), tailwindcss(), vitexPlugin({ inertiaSSREntrypoint: './js/ssr.tsx' })],
     resolve: {
       alias: {
         '@': resolve(__dirname, './js'),

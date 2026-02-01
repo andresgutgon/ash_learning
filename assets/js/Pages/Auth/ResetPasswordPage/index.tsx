@@ -1,8 +1,9 @@
-import { ReactNode } from 'react'
 import { Link, Form } from '@inertiajs/react'
+import { ReactNode } from 'react'
+
 import { index as register } from '@/actions/Auth/RegisterController'
-import AuthLayout from '@/Layouts/AuthLayout'
 import { create } from '@/actions/Auth/ResetPasswordsController'
+import AuthLayout from '@/Layouts/AuthLayout'
 
 function ResetPasswordPage({ email }: { email?: string }) {
   return (
@@ -10,9 +11,8 @@ function ResetPasswordPage({ email }: { email?: string }) {
       <div>
         <h1>Reset Password</h1>
         <p>
-          Forgot your password? No problem. Just let us know your email address
-          and we will email you a password reset link that will allow you to
-          choose a new one.
+          Forgot your password? No problem. Just let us know your email address and we will email
+          you a password reset link that will allow you to choose a new one.
         </p>
       </div>
 

@@ -1,4 +1,5 @@
 defmodule AshLearning.Accounts.UserIdentity do
+  @moduledoc false
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
     extensions: [AshAuthentication.UserIdentity],

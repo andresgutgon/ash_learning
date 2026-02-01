@@ -1,0 +1,99 @@
+name: Setup Elixir Environment
+description: Common setup steps for Elixir CI jobs
+
+inputs:
+  otp-version:
+    description: OTP version
+    required: true
+  elixir-version:
+    description: Elixir version
+    required: true
+  build:
+    description: Full build mode - compile, build assets, save cache
+    default: "false"
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Node.js
+      if: inputs.build == 'true'
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22
+
+    - name: Install pnpm
+      if: inputs.build == 'true'
+      shell: bash
+      run: npm install -g pnpm
+
+    - name: Cache pnpm store
+      if: inputs.build == 'true'
+      uses: actions/cache@v4
+      with:
+        path: ~/.pnpm-store
+        key: ${{ runner.os }}-pnpm-store-${{ hashFiles('assets/pnpm-lock.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-pnpm-store-
+
+    - name: Install JS dependencies
+      if: inputs.build == 'true'
+      shell: bash
+      working-directory: assets
+      run: pnpm install
+
+    - name: Set up Elixir
+      uses: erlef/setup-beam@v1
+      with:
+        elixir-version: ${{ inputs.elixir-version }}
+        otp-version: ${{ inputs.otp-version }}
+
+    - name: Clone vendor dependencies
+      shell: bash
+      run: ./bin/clone-vendor-deps.sh
+
+    - name: Cache Mix dependencies
+      if: inputs.build == 'true'
+      uses: actions/cache@v4
+      with:
+        path: deps
+        key: ${{ runner.os }}-mix-deps-${{ hashFiles('**/mix.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-mix-deps-
+
+    - name: Install Elixir dependencies
+      if: inputs.build == 'true'
+      shell: bash
+      run: mix deps.get
+
+    - name: Compile with warnings as errors
+      if: inputs.build == 'true'
+      shell: bash
+      run: mix compile --warnings-as-errors
+
+    - name: Build assets
+      if: inputs.build == 'true'
+      shell: bash
+      run: |
+        mix assets.build
+        cp assets/package.json priv/ssr-js/package.json
+        cp -r assets/node_modules priv/ssr-js/
+
+    - name: Save build cache
+      if: inputs.build == 'true'
+      uses: actions/cache/save@v4
+      with:
+        path: |
+          deps
+          _build
+          priv/ssr-js
+        key: build-${{ github.sha }}-${{ inputs.otp-version }}-${{ inputs.elixir-version }}
+
+    - name: Restore build cache
+      if: inputs.build == 'false'
+      uses: actions/cache/restore@v4
+      with:
+        path: |
+          deps
+          _build
+          priv/ssr-js
+        key: build-${{ github.sha }}-${{ inputs.otp-version }}-${{ inputs.elixir-version }}

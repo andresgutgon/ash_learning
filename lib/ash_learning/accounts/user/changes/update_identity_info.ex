@@ -18,8 +18,8 @@ defmodule AshLearning.Accounts.User.Changes.UpdateIdentityInfo do
   import Ash.Expr
   require Ash.Query
 
-  alias AshLearning.Accounts.UserIdentity
   alias AshLearning.Accounts.User.Changes.OAuthHelpers
+  alias AshLearning.Accounts.UserIdentity
 
   @impl true
   def change(changeset, opts, _context) do

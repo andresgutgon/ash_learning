@@ -1,23 +1,24 @@
-import { ReactNode, useCallback } from "react";
-import { Form, Link } from "@inertiajs/react";
-import AuthLayout from "@/Layouts/AuthLayout";
-import { create as login } from "@/actions/Auth/SessionsController";
-import { index as register } from "@/actions/Auth/RegisterController";
-import { index as resetPassword } from "@/actions/Auth/ResetPasswordsController";
-import { OAuthProvider } from "@/types";
-import { MagicLinkForm } from "@/components/Auth/MagicLinkForm";
+import { Form, Link } from '@inertiajs/react'
+import { ReactNode, useCallback } from 'react'
+
+import { index as register } from '@/actions/Auth/RegisterController'
+import { index as resetPassword } from '@/actions/Auth/ResetPasswordsController'
+import { create as login } from '@/actions/Auth/SessionsController'
+import { MagicLinkForm } from '@/components/Auth/MagicLinkForm'
+import AuthLayout from '@/Layouts/AuthLayout'
+import { OAuthProvider } from '@/types'
 
 type Props = {
-  return_to: string;
-  oauth_providers: OAuthProvider[];
-};
+  return_to: string
+  oauth_providers: OAuthProvider[]
+}
 
 function LoginPage({ return_to, oauth_providers }: Props) {
   const resetPasswordUrl = useCallback((formData: object) => {
-    const resetPath = resetPassword.url().path;
-    const email = "email" in formData ? formData.email : null;
-    return email ? `${resetPath}?email=${email}` : resetPath;
-  }, []);
+    const resetPath = resetPassword.url().path
+    const email = 'email' in formData ? formData.email : null
+    return email ? `${resetPath}?email=${email}` : resetPath
+  }, [])
 
   return (
     <>
@@ -33,12 +34,7 @@ function LoginPage({ return_to, oauth_providers }: Props) {
 
             <div>
               <label htmlFor="email">Email address</label>
-              <input
-                id="email"
-                type="email"
-                name="email"
-                placeholder="Enter your email"
-              />
+              <input id="email" type="email" name="email" placeholder="Enter your email" />
               {errors.email && <p>{errors.email}</p>}
             </div>
 
@@ -53,9 +49,7 @@ function LoginPage({ return_to, oauth_providers }: Props) {
               {errors.password && <p>{errors.password}</p>}
             </div>
 
-            <Link href={resetPasswordUrl(getData())}>
-              Forgot your password?
-            </Link>
+            <Link href={resetPasswordUrl(getData())}>Forgot your password?</Link>
 
             <div>
               <input type="checkbox" id="remember_me" name="remember_me" />
@@ -91,11 +85,9 @@ function LoginPage({ return_to, oauth_providers }: Props) {
 
       <MagicLinkForm returnTo={return_to} />
     </>
-  );
+  )
 }
 
-LoginPage.layout = (children: ReactNode) => (
-  <AuthLayout title="Login">{children}</AuthLayout>
-);
+LoginPage.layout = (children: ReactNode) => <AuthLayout title="Login">{children}</AuthLayout>
 
-export default LoginPage;
+export default LoginPage
