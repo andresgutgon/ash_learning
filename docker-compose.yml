@@ -66,7 +66,6 @@ services:
       - ash_learning_build:/ash_learning/_build
       - node_modules_container:/ash_learning/assets/node_modules
 
-      - node_modules_container:/ash_learning/assets/node_modules
       - /Users/andres/code/opensource/inertia-phoenix:/ash_learning/vendor/inertia-phoenix
       - /Users/andres/code/opensource/ash_authentication_phoenix:/ash_learning/vendor/ash_authentication_phoenix
       - /Users/andres/code/opensource/wayfinder:/ash_learning/vendor/wayfinder

@@ -20,13 +20,19 @@ defmodule AshLearning.Accounts.User.Senders.SendMagicLinkEmail do
         email -> email
       end
 
-    new()
-    # TODO: Replace with your email
-    |> from({"noreply", "noreply@example.com"})
-    |> to(to_string(email))
-    |> subject("Your login link")
-    |> html_body(body(token: token, email: email))
-    |> Mailer.deliver!()
+    result =
+      new()
+      # TODO: Replace with your email
+      |> from({"noreply", "noreply@example.com"})
+      |> to(to_string(email))
+      |> subject("Your login link")
+      |> html_body(body(token: token, email: email))
+      |> Mailer.deliver()
+
+    case result do
+      {:ok, _} -> :ok
+      {:error, _} = error -> error
+    end
   end
 
   defp body(params) do

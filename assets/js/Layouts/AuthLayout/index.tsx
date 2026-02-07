@@ -3,78 +3,62 @@ import { ReactNode } from 'react'
 
 import { index as signup } from '@/actions/Auth/RegisterController'
 import { login } from '@/actions/Auth/SessionsController'
-import { useHost } from '@/hooks/useHost'
+import { LogoLink } from '@/components/LogoLink'
 import MainLayout from '@/Layouts/MainLayout'
-
-function AuthLink({ text, href }: { text: string; href: string }) {
-  // return (
-  //   <Text.H5 asChild underline>
-  //     <Link href={href}>{text}</Link>
-  //   </Text.H5>
-  // )
-  return <Link href={href}>{text}</Link>
-}
+import { Text } from '@/ui/atoms/Text'
+import { FieldDescription } from '@/ui/molecules/Form/Field'
 
 function FooterLink({ children }: { children: ReactNode }) {
-  // return (
-  //   <Text.H5 fullWidth align='center' display='block'>
-  //     {children}
-  //   </Text.H5>
-  // )
-  return children
+  return <FieldDescription align='center'>{children}</FieldDescription>
 }
 
-function AuthLayout({
-  title,
-  card,
-  showToS = false,
-  children,
-}: {
-  title?: string
-  card?: {
-    title: string
-    description: string
-    footer?: ReactNode
-    // variant?: ComponentProps<typeof Card>['variant']
-  }
-  showToS?: boolean
-  children: ReactNode
-}) {
-  const { buildSiteUrl } = useHost()
+function AuthLayout({ title, children }: { title?: string; children: ReactNode }) {
   return (
     <MainLayout title={title}>
-      <div className="bg-sidebar flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
-        <div className="flex w-full max-w-sm flex-col gap-6">
-          <a href={buildSiteUrl()} className="flex items-center gap-2 self-center">
-            <div className="text-primary dark:text-foreground">
-              {/* LOGO Here. Ignore do not change for now */}
-            </div>
-          </a>
-          <div className="flex flex-col gap-6">
-            {card ? <div className="grid gap-6">{children}</div> : children}
-            {showToS ? (
-              <>
-                By clicking continue, you agree to our <a href="#">Terms of Service</a>
-                and <a href="#">Privacy Policy</a>.{' '}
-              </>
-            ) : null}
+      <div className='grid min-h-svh lg:grid-cols-2'>
+        <div className='flex flex-col gap-4 p-6 md:p-10'>
+          <div className='flex justify-center gap-2 md:justify-start'>
+            <LogoLink />
           </div>
+          <div className='flex flex-1 items-center justify-center'>
+            <div className='w-full max-w-xs'>{children}</div>
+          </div>
+        </div>
+        <div className='relative hidden bg-muted lg:block'>
+          <img
+            src='/images/placeholder.svg'
+            alt=''
+            className='absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale'
+          />
         </div>
       </div>
     </MainLayout>
   )
 }
 
-AuthLayout.goSignup = () => (
+AuthLayout.SignupLink = () => (
   <FooterLink>
-    Don&apos;t have an account? <AuthLink text="Sign up" href={signup.get().url} />
+    Don&apos;t have an account? <Link href={signup.get().url}>Sign up</Link>
   </FooterLink>
 )
 
-AuthLayout.goLogin = () => (
+AuthLayout.LoginLink = () => (
   <FooterLink>
-    Already have an account? <AuthLink text="Login" href={login.get().url} />
+    Already have an account? <Link href={login.get().url}>Sign in</Link>
   </FooterLink>
+)
+
+AuthLayout.FooterLink = FooterLink
+
+AuthLayout.Header = ({ title, description }: { title: string; description: string }) => (
+  <div className='flex flex-col items-center gap-1 text-center'>
+    <Text.H2B asChild>
+      <h1>{title}</h1>
+    </Text.H2B>
+    <Text.H5 centered textBalance asChild color='mutedForeground'>
+      <p>{description}</p>
+    </Text.H5>
+  </div>
 )
 
 export default AuthLayout

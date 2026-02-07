@@ -10,10 +10,16 @@ import { PageProps } from '@/types'
 
 axios.defaults.xsrfHeaderName = 'x-csrf-token'
 
-createInertiaApp({
+void createInertiaApp({
   resolve: resolvePage,
   setup({ App, el, props }) {
-    const { ssr } = props.initialPage.props as PageProps
+    // Type guard for PageProps
+    const isPageProps = (obj: unknown): obj is PageProps => {
+      return obj !== null && typeof obj === 'object' && ('ssr' in obj || 'currentPath' in obj)
+    }
+
+    const initialPageProps = props.initialPage.props
+    const ssr = initialPageProps && isPageProps(initialPageProps) ? initialPageProps.ssr : false
 
     const app = (
       <StrictMode>

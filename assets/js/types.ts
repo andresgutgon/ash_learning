@@ -84,10 +84,11 @@ export type PageProps<T extends ConcretePageProps = ConcretePageProps> = T & {
   }
 }
 
-export type OAuthProvider = {
-  name: string
+export type OauthStrategy = 'google' | 'github'
+export type OAuthProvider<T extends OauthStrategy> = {
+  name: T
+  icon: T
   display_name: string
-  icon: string
   auth_url: string
 }
 
