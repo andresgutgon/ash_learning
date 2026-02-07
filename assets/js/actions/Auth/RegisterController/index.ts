@@ -60,7 +60,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
  * @see AshLearningWeb.Auth.RegisterController::update
- * @see lib/ash_learning_web/controllers/auth/register_controller.ex:54
+ * @see lib/ash_learning_web/controllers/auth/register_controller.ex:55
  * @route /register/:id
 */
 

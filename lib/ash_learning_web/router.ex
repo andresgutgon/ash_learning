@@ -4,6 +4,7 @@ defmodule AshLearningWeb.Router do
   use AshAuthentication.Phoenix.Router
   use AshLearningWeb, :router
 
+  alias AshAuthentication.Plug.Helpers, as: AuthHelpers
   alias AshLearningWeb.Plugs.Host
 
   @hosts Application.compile_env(:ash_learning, AshLearningWeb, [])
@@ -12,7 +13,7 @@ defmodule AshLearningWeb.Router do
 
   # Custom plug to avoid ambiguous import
   def set_user_actor(conn, _opts) do
-    AshAuthentication.Plug.Helpers.set_actor(conn, :user)
+    AuthHelpers.set_actor(conn, :user)
   end
 
   pipeline :browser do

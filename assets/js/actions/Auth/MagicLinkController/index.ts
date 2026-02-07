@@ -31,7 +31,7 @@ create.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
  * @see AshLearningWeb.Auth.MagicLinkController::update
- * @see lib/ash_learning_web/controllers/auth/magic_link_controller.ex:32
+ * @see lib/ash_learning_web/controllers/auth/magic_link_controller.ex:33
  * @route /magic-link/:id
 */
 

@@ -6,7 +6,6 @@ set -euo pipefail
 # Format: "owner/repo:branch:target_dir"
 # =============================================================================
 VENDOR_DEPS=(
-  "team-alembic/ash_authentication_phoenix:main:ash_authentication_phoenix"
   "andresgutgon/inertia-phoenix:feature/inertia-vitejs-integration:inertia-phoenix"
   "andresgutgon/vitex:main:vitex"
 )

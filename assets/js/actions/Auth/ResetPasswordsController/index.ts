@@ -2,7 +2,7 @@ import { buildUrl, type RouteQueryOptions, type RouteDefinition, type RouteDefin
 
 /**
  * @see AshLearningWeb.Auth.ResetPasswordsController::create
- * @see lib/ash_learning_web/controllers/auth/reset_passwords_controller.ex:17
+ * @see lib/ash_learning_web/controllers/auth/reset_passwords_controller.ex:15
  * @route /reset-password
 */
 
@@ -31,7 +31,7 @@ create.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
  * @see AshLearningWeb.Auth.ResetPasswordsController::index
- * @see lib/ash_learning_web/controllers/auth/reset_passwords_controller.ex:10
+ * @see lib/ash_learning_web/controllers/auth/reset_passwords_controller.ex:8
  * @route /reset-password
 */
 
@@ -60,7 +60,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
  * @see AshLearningWeb.Auth.ResetPasswordsController::update
- * @see lib/ash_learning_web/controllers/auth/reset_passwords_controller.ex:42
+ * @see lib/ash_learning_web/controllers/auth/reset_passwords_controller.ex:40
  * @route /reset-password/:id
 */
 
@@ -95,7 +95,7 @@ update.put = (args: { id: string | number } | [string | number] | string | numbe
 
 /**
  * @see AshLearningWeb.Auth.ResetPasswordsController::edit
- * @see lib/ash_learning_web/controllers/auth/reset_passwords_controller.ex:34
+ * @see lib/ash_learning_web/controllers/auth/reset_passwords_controller.ex:32
  * @route /reset-password/:id/edit
 */
 
