@@ -1,5 +1,4 @@
 defmodule AshLearningWeb.Router do
-  import AshAuthentication.Plug.Helpers
   import AshLearningWeb.Auth, only: [require_user: 2, redirect_if_user_is_authenticated: 2]
   use Wayfinder.PhoenixRouter
   use AshAuthentication.Phoenix.Router
@@ -11,6 +10,11 @@ defmodule AshLearningWeb.Router do
   @main_host @hosts[:main_host]
   @app_host @hosts[:app_host]
 
+  # Custom plug to avoid ambiguous import
+  def set_user_actor(conn, _opts) do
+    AshAuthentication.Plug.Helpers.set_actor(conn, :user)
+  end
+
   pipeline :browser do
     plug(:accepts, ["html"])
     plug(:fetch_session)
@@ -20,7 +24,7 @@ defmodule AshLearningWeb.Router do
     plug(:put_secure_browser_headers)
     plug(:sign_in_with_remember_me)
     plug(:load_from_session)
-    plug(:set_actor, :user)
+    plug(:set_user_actor)
     plug(Inertia.Plug)
     plug(Host)
   end
@@ -28,7 +32,7 @@ defmodule AshLearningWeb.Router do
   pipeline :api do
     plug(:accepts, ["json"])
     plug(:load_from_bearer)
-    plug(:set_actor, :user)
+    plug(:set_user_actor)
   end
 
   scope "/", AshLearningWeb, host: @main_host do
