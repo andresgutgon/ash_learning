@@ -12,9 +12,11 @@ import { ForwardRefExoticComponent, RefAttributes } from 'react'
 import { Toaster as Sonner, toast as sonnerToast, ToasterProps } from 'sonner'
 
 import { cn } from '@/lib/utils'
+import { StyleWithVars } from '@/types'
 import { ButtonProps, Button } from '@/ui/atoms/Button'
 import { Text } from '@/ui/atoms/Text'
 import { BackgroundColor, colors, TextColor } from '@/ui/tokens/colors'
+import { isThemeValue } from '@/ui/tokens/theme'
 type IconComponent = ForwardRefExoticComponent<
   Omit<LucideProps, 'ref'> & RefAttributes<SVGSVGElement>
 >
@@ -179,11 +181,11 @@ export function Toast({
   )
 }
 const Toaster = ({ ...props }: ToasterProps) => {
-  const { theme = 'system' } = useTheme()
-
+  const { theme: maybeTheme } = useTheme()
+  const theme = isThemeValue(maybeTheme) ? maybeTheme : 'system'
   return (
     <Sonner
-      theme={theme as ToasterProps['theme']}
+      theme={theme}
       className='toaster group'
       icons={{
         success: <CircleCheckIcon className='size-4' />,
@@ -198,7 +200,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
           '--normal-text': 'var(--popover-foreground)',
           '--normal-border': 'var(--border)',
           '--border-radius': 'var(--radius)',
-        } as React.CSSProperties
+        } as StyleWithVars
       }
       toastOptions={{
         classNames: {

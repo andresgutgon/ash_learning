@@ -3,7 +3,7 @@ import { buildUrl, type RouteQueryOptions, type RouteDefinition, type RouteDefin
 /**
  * @see AshLearningWeb.Dashboard.DashboardIndexController::index
  * @see lib/ash_learning_web/controllers/dashboard/dashboard_controller.ex:6
- * @route /dashboard
+ * @route /
 */
 
 export const dashboard = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -13,7 +13,7 @@ export const dashboard = (options?: RouteQueryOptions): RouteDefinition<'get'> =
 
 dashboard.definition = {
   methods: ["get"],
-  url: '/dashboard',
+  url: '/',
   parameters: {}
 } satisfies RouteDefinitionWithParameters<['get']>
 

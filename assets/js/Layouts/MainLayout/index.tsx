@@ -2,6 +2,7 @@ import { Head } from '@inertiajs/react'
 import { ThemeProvider } from 'next-themes'
 import { ReactNode } from 'react'
 
+import { TooltipProvider } from '@/ui/atoms/Tooltip'
 import { FlashMessage } from '@/ui/molecules/FlashMessage'
 import { Toaster } from '@/ui/molecules/Toast/Primitives'
 
@@ -10,7 +11,7 @@ export default function MainLayout({ title, children }: { title?: string; childr
   return (
     <ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange>
       <Head title={title} />
-      {children}
+      <TooltipProvider>{children}</TooltipProvider>
       <Toaster position='top-right' duration={TOAST_DURATION} />
       <FlashMessage durationMs={TOAST_DURATION} />
     </ThemeProvider>

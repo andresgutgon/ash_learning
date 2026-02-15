@@ -1,5 +1,5 @@
 import { usePage } from '@inertiajs/react'
-import type { Dispatch, SetStateAction } from 'react'
+import type { CSSProperties, Dispatch, SetStateAction } from 'react'
 
 export type ReactStateDispatch<T> = Dispatch<SetStateAction<T>>
 
@@ -100,3 +100,6 @@ export type UserIdentity = {
   avatar_url: string | null
   full_name: string | null
 }
+
+type CSSVars = Record<`--${string}`, string | number>
+export type StyleWithVars = CSSProperties & CSSVars

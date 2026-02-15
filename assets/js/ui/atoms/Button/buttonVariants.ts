@@ -13,7 +13,7 @@ export const buttonVariants = cva(
         ghost:
           'hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50',
         destructive:
-          'bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40',
+          'bg-destructive text-destructive-foreground focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40',
         link: 'cursor-pointer font-normal text-primary underline-offset-4 hover:underline',
 
         // Custom Variants
@@ -22,6 +22,7 @@ export const buttonVariants = cva(
 
         success:
           'from-success-foreground/70 to-success-foreground/90 text-success dark:from-success/70 dark:to-success/90 dark:text-success-foreground border-success/40 shadow-success/25 dark:border-success/50 border bg-linear-to-b shadow-md ring-0 inset-shadow-2xs inset-shadow-white/25 transition-[filter] duration-200 hover:brightness-110 active:brightness-95 dark:border-0 dark:bg-linear-to-t',
+        nope: 'bg-transparent text-primary-foreground group-hover:bg-transparent',
       },
       size: {
         default:
@@ -41,5 +42,11 @@ export const buttonVariants = cva(
       variant: 'default',
       size: 'default',
     },
+    compoundVariants: [
+      {
+        variant: 'nope',
+        className: 'p-0',
+      },
+    ],
   },
 )

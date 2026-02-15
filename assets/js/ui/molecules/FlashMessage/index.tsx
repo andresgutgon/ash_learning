@@ -5,9 +5,14 @@ import { PageProps } from '@/types'
 import { showToast } from '@/ui/molecules/Toast'
 import { ToastProps } from '@/ui/molecules/Toast/Primitives'
 
+const FLASH_TYPES = ['success', 'error', 'info', 'warning'] as const
+type FlashType = (typeof FLASH_TYPES)[number]
+const getFlashType = (flash: PageProps['flash']): FlashType | null =>
+  FLASH_TYPES.find((k) => flash[k] != null) ?? null
+
 function getFlashVariant(flash?: PageProps['flash']): ToastProps['variant'] | null {
   if (!flash) return null
-  const type = (Object.keys(flash) as Array<keyof typeof flash>).find((key) => flash[key] != null)
+  const type = getFlashType(flash)
   switch (type) {
     case 'error':
       return 'destructive'

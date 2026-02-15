@@ -1,0 +1,86 @@
+'use client'
+
+import { ChevronsUpDown, Plus } from 'lucide-react'
+import { ElementType, useState } from 'react'
+
+import { Dropdown, type DropdownProps } from '@/ui/atoms/Dropdown'
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/ui/organisms/Sidebar'
+import { useSidebar } from '@/ui/organisms/Sidebar/useSidebar'
+
+export function TeamSwitcher({
+  teams,
+}: {
+  teams: {
+    name: string
+    logo: ElementType
+    plan: string
+  }[]
+}) {
+  const { isMobile } = useSidebar()
+  const [activeTeam, setActiveTeam] = useState(teams[0])
+
+  if (!activeTeam) {
+    return null
+  }
+
+  const options: DropdownProps['options'] = [
+    {
+      type: 'group',
+      label: 'Teams',
+      className: 'text-xs text-muted-foreground',
+      options: [
+        ...teams.map((team, index) => ({
+          label: team.name,
+          icon: (
+            <div className='flex size-6 items-center justify-center rounded-md border'>
+              <team.logo className='size-3.5 shrink-0' />
+            </div>
+          ),
+          shortcut: `⌘${index + 1}`,
+          className: 'gap-2 p-2',
+          onClick: () => setActiveTeam(team),
+        })),
+      ],
+    },
+    { type: 'separator' },
+    {
+      label: 'Add team',
+      icon: (
+        <div className='flex size-6 items-center justify-center rounded-md border bg-transparent'>
+          <Plus className='size-4' />
+        </div>
+      ),
+      className: 'gap-2 p-2',
+      onClick: () => console.log('Add team clicked'),
+    },
+  ]
+
+  return (
+    <SidebarMenu>
+      <SidebarMenuItem>
+        <Dropdown
+          trigger={
+            <SidebarMenuButton
+              size='lg'
+              className='data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'
+            >
+              <div className='flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground'>
+                <activeTeam.logo className='size-4' />
+              </div>
+              <div className='grid flex-1 text-left text-sm leading-tight'>
+                <span className='truncate font-medium'>{activeTeam.name}</span>
+                <span className='truncate text-xs'>{activeTeam.plan}</span>
+              </div>
+              <ChevronsUpDown className='ml-auto' />
+            </SidebarMenuButton>
+          }
+          options={options}
+          className='w-(--anchor-width) min-w-56'
+          align='start'
+          side={isMobile ? 'bottom' : 'right'}
+          sideOffset={4}
+        />
+      </SidebarMenuItem>
+    </SidebarMenu>
+  )
+}

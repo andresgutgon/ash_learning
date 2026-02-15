@@ -42,7 +42,7 @@ defmodule AshLearningWeb.Auth.AshAuthController do
 
           {
             "This #{provider_name} account is already connected to another user.",
-            if(conn.assigns[:current_user], do: ~p"/dashboard", else: ~p"/login")
+            if(conn.assigns[:current_user], do: ~p"/", else: ~p"/login")
           }
         else
           {"Authentication failed. Please try again.", ~p"/login"}

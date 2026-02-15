@@ -35,26 +35,26 @@ create.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
  * @route /login
 */
 
-export const deleteMethod = (options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
-  url: deleteMethod.url(options).path,
+export const logout = (options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
+  url: logout.url(options).path,
   method: 'delete',
 })
 
-deleteMethod.definition = {
+logout.definition = {
   methods: ["delete"],
   url: '/login',
   parameters: {}
 } satisfies RouteDefinitionWithParameters<['delete']>
 
-deleteMethod.url = (options?: RouteQueryOptions): WayfinderUrl => {
+logout.url = (options?: RouteQueryOptions): WayfinderUrl => {
   return buildUrl({
-    definition: deleteMethod.definition,
+    definition: logout.definition,
     options
   })
 }
 
-deleteMethod.delete = (options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
-  url: deleteMethod.url(options).path,
+logout.delete = (options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
+  url: logout.url(options).path,
   method: 'delete',
 })
 
@@ -88,6 +88,6 @@ login.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 
 
-const SessionsController = { create, delete: deleteMethod, login }
+const SessionsController = { create, logout, login }
 
 export default SessionsController
