@@ -5,6 +5,7 @@
   "useTabs": false,
   "semi": false,
   "singleQuote": true,
+  "jsxSingleQuote": true,
   "trailingComma": "all",
   "experimentalSortImports": {
     "groups": [

@@ -12,13 +12,19 @@ defmodule AshLearning.Accounts.User.Senders.SendPasswordResetEmail do
 
   @impl true
   def send(user, token, _) do
-    new()
-    # TODO: Replace with your email
-    |> from({"noreply", "noreply@example.com"})
-    |> to(to_string(user.email))
-    |> subject("Reset your password")
-    |> html_body(body(token: token))
-    |> Mailer.deliver!()
+    result =
+      new()
+      # TODO: Replace with your email
+      |> from({"noreply", "noreply@example.com"})
+      |> to(to_string(user.email))
+      |> subject("Reset your password")
+      |> html_body(body(token: token))
+      |> Mailer.deliver()
+
+    case result do
+      {:ok, _} -> :ok
+      {:error, _} = error -> error
+    end
   end
 
   defp body(params) do

@@ -10,6 +10,7 @@ ash_learning-*.tar
 app-*.tar
 
 /priv/static/assets/
+/priv/static/fonts/
 /priv/ssr-js/
 /priv/static/cache_manifest.json
 /priv/plts/

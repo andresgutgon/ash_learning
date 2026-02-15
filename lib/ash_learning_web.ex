@@ -17,6 +17,9 @@ defmodule AshLearningWeb do
   those modules here.
   """
 
+  # Ensure protocol implementations are loaded
+  require AshLearningWeb.Errors
+
   def static_paths, do: ~w(assets fonts images favicon.ico robots.txt)
 
   def router do

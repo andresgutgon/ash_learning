@@ -28,7 +28,7 @@ export default function AppLayout({
        * [Read more](https://inertiajs.com/pages#scroll-regions)
        */}
       <div
-        scroll-region="true"
+        scroll-region='true'
         className={`@container/appLayout flex flex-1 flex-col gap-y-4 py-4 pt-0 ${APP_HORIZONTAL_PADDING}`}
       >
         {children}
