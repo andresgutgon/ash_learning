@@ -73,7 +73,7 @@ defmodule AshLearningWeb.Auth do
     end
   end
 
-  def signed_in_path(_conn), do: ~p"/dashboard"
+  def signed_in_path(_conn), do: ~p"/"
 
   @doc """
   Retrieves the return_to path from the session or params.
@@ -126,9 +126,9 @@ defmodule AshLearningWeb.Auth do
     end)
   end
 
-  defp strategy_display_name(%{name: :github}), do: "GitHub"
-  defp strategy_display_name(%{name: :google}), do: "Google"
-  defp strategy_display_name(%{name: name}), do: Phoenix.Naming.humanize(name)
+  def strategy_display_name(%{name: :github}), do: "GitHub"
+  def strategy_display_name(%{name: :google}), do: "Google"
+  def strategy_display_name(%{name: name}), do: Phoenix.Naming.humanize(name)
 
   defp get_strategy_icon(%{name: :github}), do: "github"
   defp get_strategy_icon(%{name: :google}), do: "google"

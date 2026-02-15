@@ -45,6 +45,10 @@ defmodule AshLearningWeb.Router do
   scope "/", AshLearningWeb.Auth, host: @app_host do
     pipe_through([:browser])
 
+    get("/oauth/:provider", OAuthRedirectController, :redirect_with_return_to,
+      as: :oauth_redirect
+    )
+
     auth_routes(
       AshAuthController,
       AshLearning.Accounts.User,
@@ -72,13 +76,20 @@ defmodule AshLearningWeb.Router do
   scope "/", AshLearningWeb, host: @app_host do
     pipe_through([:browser, :require_user])
 
-    scope "/", Auth do
-      delete("/providers/:provider/:uid", ProvidersController, :delete)
-      delete("/login", SessionsController, :delete)
+    scope "/", Dashboard do
+      get("/", DashboardIndexController, :index, as: :dashboard)
     end
 
-    scope "/dashboard", Dashboard do
-      get("/", DashboardIndexController, :index, as: :dashboard)
+    scope "/account", Account do
+      get("/connections", ConnectionsController, :index, as: :account_connections)
+
+      delete("/connections/:provider/:uid", ConnectionsController, :delete,
+        as: :delete_account_connection
+      )
+    end
+
+    scope "/", Auth do
+      delete("/login", SessionsController, :delete, as: :logout)
     end
   end
 end

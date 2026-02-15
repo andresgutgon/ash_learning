@@ -1,14 +1,20 @@
 import { Link } from '@inertiajs/react'
 
+import {
+  accountConnections,
+  deleteAccountConnection,
+} from '@/actions/Account/ConnectionsController'
+import { redirectWithReturnTo } from '@/actions/Auth/OAuthRedirectController'
 import { ProviderIcon } from '@/components/Auth/ProviderIcon'
 import type { OAuthProvider, OauthStrategy, UserIdentity } from '@/types'
+import { Button } from '@/ui/atoms/Button'
+import { Text } from '@/ui/atoms/Text'
 
-type Props = {
+export type Props = {
   providers: OAuthProvider<OauthStrategy>[]
   identities: UserIdentity[]
 }
 
-// Group identities by strategy/provider
 function groupIdentitiesByProvider(identities: UserIdentity[]) {
   return identities.reduce(
     (acc, identity) => {
@@ -30,10 +36,8 @@ function IdentityRow<T extends OauthStrategy>({
   identity: UserIdentity
   provider: OAuthProvider<T>
 }) {
-  const disconnectUrl = `/providers/${provider.name}/${encodeURIComponent(identity.uid)}`
-
   return (
-    <div className='flex items-center justify-between p-3 pl-12'>
+    <li className='flex items-center justify-between p-3'>
       <div className='flex items-center gap-2'>
         {identity.avatar_url && (
           <img
@@ -49,18 +53,24 @@ function IdentityRow<T extends OauthStrategy>({
         </div>
       </div>
 
-      <Link
-        href={disconnectUrl}
-        method='delete'
-        as='button'
-        className='rounded border border-red-300 px-2 py-1 text-xs font-medium text-red-600 transition-colors hover:bg-red-50'
-        onBefore={() =>
-          confirm(`Are you sure you want to disconnect this ${provider.display_name} account?`)
+      <Button
+        variant='destructive'
+        size='xs'
+        render={
+          <Link
+            href={deleteAccountConnection({
+              provider: provider.name,
+              uid: identity.uid,
+            })}
+            onBefore={() =>
+              confirm(`Are you sure you want to disconnect this ${provider.display_name} account?`)
+            }
+          >
+            Disconnect
+          </Link>
         }
-      >
-        Disconnect
-      </Link>
-    </div>
+      />
+    </li>
   )
 }
 
@@ -74,12 +84,12 @@ function ProviderSection<T extends OauthStrategy>({
   const isConnected = identities.length > 0
 
   return (
-    <div className='overflow-hidden rounded-lg border border-gray-200 bg-white'>
-      <div className='flex items-center justify-between bg-gray-50 p-4'>
+    <div className='rounded-lg border border-border'>
+      <div className='flex items-center justify-between bg-card p-2'>
         <div className='flex items-center gap-3'>
           <ProviderIcon name={provider.icon} />
           <div>
-            <h3 className='font-medium'>{provider.display_name}</h3>
+            <Text.H3>{provider.display_name}</Text.H3>
             {isConnected ? (
               <p className='flex items-center gap-1 text-sm text-green-600'>
                 <svg className='h-4 w-4' viewBox='0 0 20 20' fill='currentColor'>
@@ -98,27 +108,32 @@ function ProviderSection<T extends OauthStrategy>({
         </div>
 
         <a
-          href={provider.auth_url}
-          className='inline-flex items-center gap-1.5 rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-indigo-700'
+          href={
+            redirectWithReturnTo(provider.name, {
+              query: { return_to: accountConnections().url },
+            }).url
+          }
         >
-          <svg className='h-4 w-4' viewBox='0 0 20 20' fill='currentColor'>
-            <path
-              fillRule='evenodd'
-              d='M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z'
-              clipRule='evenodd'
-            />
-          </svg>
-          {isConnected ? 'Add another' : 'Connect'}
+          <Button variant='default'>
+            <svg className='h-4 w-4' viewBox='0 0 20 20' fill='currentColor'>
+              <path
+                fillRule='evenodd'
+                d='M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z'
+                clipRule='evenodd'
+              />
+            </svg>
+            {isConnected ? 'Add another' : 'Connect'}
+          </Button>
         </a>
       </div>
 
       {/* Connected identities list */}
       {isConnected && (
-        <div className='divide-y divide-gray-200'>
+        <ul className='divide-y divide-border'>
           {identities.map((identity) => (
             <IdentityRow key={identity.id} identity={identity} provider={provider} />
           ))}
-        </div>
+        </ul>
       )}
     </div>
   )
@@ -128,24 +143,15 @@ export function ProvidersList({ providers, identities }: Props) {
   const identitiesByProvider = groupIdentitiesByProvider(identities)
 
   return (
-    <div className='space-y-4'>
-      <div>
-        <h2 className='text-lg font-semibold'>Connect your accounts</h2>
-        <p className='text-gray-600'>
-          Link your social accounts to enable sign-in with multiple providers.
-        </p>
-      </div>
-
-      <div className='space-y-3'>
-        {providers.map((provider) => (
-          <ProviderSection
-            key={provider.name}
-            provider={provider}
-            identities={identitiesByProvider[provider.name] || []}
-          />
-        ))}
-      </div>
-    </div>
+    <>
+      {providers.map((provider) => (
+        <ProviderSection
+          key={provider.name}
+          provider={provider}
+          identities={identitiesByProvider[provider.name] || []}
+        />
+      ))}
+    </>
   )
 }
 
