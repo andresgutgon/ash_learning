@@ -3,12 +3,14 @@ config :ash_learning, token_signing_secret: "jGuPrTa+tduE7obfw5Vfz5oDNJcxFtY1"
 config :bcrypt_elixir, log_rounds: 1
 config :ash, policies: [show_policy_breakdowns?: true], disable_async?: true
 
-# Test hosts for router host constraints
+# Test hosts for router host constraints - use dev domains for Vite HMR
 config :ash_learning, AshLearningWeb,
-  main_host: "www.example.com",
-  app_host: "app.example.com",
-  site_url: "https://www.example.com",
-  app_url: "https://app.example.com"
+  main_host: "ashlearning.dev",      # Use dev domain
+  app_host: "app.ashlearning.dev",   # Use dev domain for Vite HMR
+  site_url: "https://ashlearning.dev",
+  app_url: "https://app.ashlearning.dev"
+
+System.put_env("VITE_HOST", "localhost:5173")
 
 # Configure your database
 #
@@ -19,13 +21,19 @@ config :ash_learning, AshLearning.Repo,
   username: System.get_env("DB_USER") || "postgres",
   password: System.get_env("DB_PASSWORD") || "postgres",
   hostname: System.get_env("DB_HOST") || "localhost",
-  database: "ash_learning_test#{System.get_env("MIX_TEST_PARTITION")}",
+  database: "ash_learning_development", # Use dev DB for E2E tests
   pool: Ecto.Adapters.SQL.Sandbox,
-  pool_size: System.schedulers_online() * 2
+  pool_size: 10
 
 config :ash_learning, AshLearningWeb.Endpoint,
-  http: [ip: {127, 0, 0, 1}, port: 4002],
-  server: false
+  http: [ip: {0, 0, 0, 0}, port: 4002],  # Bind to all interfaces for Docker access
+  server: true
+
+config :phoenix_test,
+  otp_app: :ash_learning,
+  playwright: [
+    ws_endpoint: "ws://playwright:3000"
+  ]
 
 # In test we don't send emails
 config :ash_learning, AshLearning.Mailer, adapter: Swoosh.Adapters.Test
@@ -40,5 +48,8 @@ config :logger, level: :warning
 config :phoenix, :plug_init_mode, :runtime
 
 # Enable helpful, but potentially expensive runtime checks
+config :ash_learning,
+  test_dev_mode: true
+
 config :phoenix_live_view,
   enable_expensive_runtime_checks: true

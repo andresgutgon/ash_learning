@@ -1,4 +1,33 @@
 tls:
   certificates:
-    - certFile: /src/docker/dev-certificates/cert.pem
-      keyFile: /src/docker/dev-certificates/key.pem
+    - certFile: /certs/cert.pem
+      keyFile: /certs/key.pem
+
+http:
+  routers:
+    vite:
+      entryPoints: [websecure]
+      rule: Host(`vite.ashlearning.dev`)
+      priority: 200
+      tls: {}
+      service: vite
+
+    phx:
+      entryPoints: [websecure]
+      rule: Host(`ashlearning.dev`) || HostRegexp(`^[a-zA-Z0-9-]+\.ashlearning\.dev$`)
+      priority: 100
+      tls: {}
+      service: phx
+
+  services:
+    phx:
+      loadBalancer:
+        passHostHeader: true
+        servers:
+          - url: "http://host.docker.internal:4004"
+
+    vite:
+      loadBalancer:
+        passHostHeader: false
+        servers:
+          - url: "http://host.docker.internal:5173"

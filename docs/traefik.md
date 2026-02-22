@@ -16,7 +16,7 @@ This also help simulate assets being served from a different domain, which is a 
 ## SSL certificates in development
 ```bash
 cd docker/dev-certificates
-mkcert "*.ashlearning.test" ashlearning.test
+mkcert "*.ashlearning.dev" ashlearning.dev
 ```
 
 ## How install mkcert

@@ -10,7 +10,7 @@ ash_learning-*.tar
 app-*.tar
 
 /priv/static/assets/
-/priv/static/fonts/
+/priv/static/fonts
 /priv/ssr-js/
 /priv/static/cache_manifest.json
 /priv/plts/
@@ -31,6 +31,7 @@ priv/node_modules
 
 docker/dev-certificates/key.pem
 docker/dev-certificates/cert.pem
+docker/dev-certificates/rootCA.pem
 
 # Local development symlinks
 /vendor/

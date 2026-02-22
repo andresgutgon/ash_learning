@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -e
+
+ENV_FILE=".env.development"
+
+if [ -f "$ENV_FILE" ]; then
+  set -a # auto-export variables
+  source "$ENV_FILE"
+  set +a
+fi
+
+case "$1" in
+  c)
+    iex -S mix
+    ;;
+  *)
+    iex -S mix phx.server
+    ;;
+esac
