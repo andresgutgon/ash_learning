@@ -9,21 +9,40 @@ import vitexPlugin from '../deps/vitex/priv/vitejs/vitePlugin.js'
 const isSSR = process.env.VITE_SSR === 'true'
 const input: Record<string, string> = isSSR ? { ssr: './js/ssr.tsx' } : { app: './js/app.tsx' }
 
+function buildDevDomains() {
+  const host = process.env.PHX_HOST
+
+  if (!host) {
+    throw new Error('PHX_HOST is not set in .env.development.')
+  }
+
+  return {
+    dockerHost: 'host.docker.internal',
+    host,
+    viteHost: `vite.${host}`,
+    main: `https://${host}`,
+    app: `https://app.${host}`,
+    wildcard: new RegExp(`^https://[a-zA-Z0-9-]+\\.${host.replace('.', '\\.')}$`),
+  }
+}
+
 /**
  * Vite runs under Traefik in development inside Docker.
  */
 function buildDevServerUrl(isDev: boolean) {
   if (!isDev) return undefined
 
+  const domains = buildDevDomains()
   return {
     host: true, // listen on all interfaces inside Docker
     port: 5173,
+    allowedHosts: [domains.host, domains.viteHost, domains.dockerHost],
     hmr: {
       protocol: 'wss',
-      host: process.env.VITE_HOST,
+      host: domains.viteHost,
     },
     cors: {
-      origin: [`https://${process.env.PHX_HOST}`, `https://${process.env.APP_HOST}`],
+      origin: [domains.main, domains.app, domains.wildcard],
       credentials: true,
     },
   }

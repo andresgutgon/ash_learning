@@ -1,0 +1,88 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Load environment variables from .env.development
+if [[ -f .env.development ]]; then
+    export $(grep -v '^#' .env.development | xargs)
+fi
+
+# Validate required environment variable
+if [[ -z "${PHX_HOST:-}" ]]; then
+    echo "❌ PHX_HOST environment variable is required"
+    echo "   Set it in .env.development or export PHX_HOST=your-domain.dev"
+    exit 1
+fi
+
+CERT_DIR="docker/dev-certificates"
+ROOT_CA_FILE="$CERT_DIR/rootCA.pem"
+DOMAIN_CERT="$CERT_DIR/cert.pem"
+DOMAIN_KEY="$CERT_DIR/key.pem"
+
+echo "🔧 Setting up SSL certificates for development..."
+echo "📍 Domain: $PHX_HOST"
+
+# Create certificates directory if it doesn't exist
+mkdir -p "$CERT_DIR"
+
+# Check if mkcert is available
+if command -v mkcert >/dev/null 2>&1; then
+    echo "✅ mkcert found - using mkcert certificates"
+
+    # Get mkcert root CA
+    MKCERT_CAROOT=$(mkcert -CAROOT)
+    if [[ -f "$MKCERT_CAROOT/rootCA.pem" ]]; then
+        echo "📄 Copying mkcert root CA..."
+        cp "$MKCERT_CAROOT/rootCA.pem" "$ROOT_CA_FILE"
+    else
+        echo "❌ mkcert root CA not found. Run 'mkcert -install' first."
+        exit 1
+    fi
+
+    # Generate domain certificates if they don't exist
+    if [[ ! -f "$DOMAIN_CERT" ]] || [[ ! -f "$DOMAIN_KEY" ]]; then
+        echo "🔐 Generating certificates for *.$PHX_HOST..."
+        mkcert -cert-file "$DOMAIN_CERT" -key-file "$DOMAIN_KEY" \
+            "$PHX_HOST" \
+            "*.$PHX_HOST" \
+            "localhost" \
+            "127.0.0.1" \
+            "::1"
+        echo "✅ Domain certificates generated"
+    else
+        echo "✅ Domain certificates already exist"
+    fi
+
+else
+    echo "⚠️  mkcert not found - generating self-signed certificates"
+
+    # Generate self-signed root CA if it doesn't exist
+    if [[ ! -f "$ROOT_CA_FILE" ]]; then
+        echo "🔐 Generating self-signed root CA..."
+        openssl req -x509 -newkey rsa:2048 -keyout "$CERT_DIR/rootCA-key.pem" \
+            -out "$ROOT_CA_FILE" -days 365 -nodes \
+            -subj "/C=US/ST=Dev/L=Dev/O=DevOrg/CN=Dev Root CA" \
+            -addext "basicConstraints=critical,CA:TRUE"
+    fi
+
+    # Generate domain certificates if they don't exist
+    if [[ ! -f "$DOMAIN_CERT" ]] || [[ ! -f "$DOMAIN_KEY" ]]; then
+        echo "🔐 Generating self-signed certificates for *.$PHX_HOST..."
+        openssl req -x509 -newkey rsa:2048 -keyout "$DOMAIN_KEY" \
+            -out "$DOMAIN_CERT" -days 365 -nodes \
+            -subj "/C=US/ST=Dev/L=Dev/O=DevOrg/CN=*.$PHX_HOST" \
+            -addext "subjectAltName=DNS:$PHX_HOST,DNS:*.$PHX_HOST,DNS:localhost,IP:127.0.0.1"
+        echo "✅ Self-signed certificates generated"
+    else
+        echo "✅ Self-signed certificates already exist"
+    fi
+fi
+
+echo ""
+echo "🎉 SSL setup complete!"
+echo "📄 Root CA: $ROOT_CA_FILE (for Playwright)"
+echo "🔐 Domain cert: $DOMAIN_CERT (for Traefik)"
+echo "🔑 Domain key: $DOMAIN_KEY (for Traefik)"
+echo ""
+echo "Next steps:"
+echo "1. Restart services: docker-compose up"
+echo "2. Run E2E tests: ./bin/e2e.sh"

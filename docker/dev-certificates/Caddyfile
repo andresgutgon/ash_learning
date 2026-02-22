@@ -1,0 +1,11 @@
+app.ashlearning.dev, ashlearning.dev {
+	tls /certs/cert.pem /certs/key.pem
+	reverse_proxy {$PHOENIX_HOST:host.docker.internal}:4004 {
+		header_up Host {host}
+	}
+}
+
+vite.ashlearning.dev {
+	tls /certs/cert.pem /certs/key.pem
+	reverse_proxy {$VITE_HOST:host.docker.internal}:5173
+}

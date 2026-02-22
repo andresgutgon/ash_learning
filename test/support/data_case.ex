@@ -26,6 +26,7 @@ defmodule AshLearning.DataCase do
       import Ecto.Changeset
       import Ecto.Query
       import AshLearning.DataCase
+      import TestHelpers
     end
   end
 
@@ -36,10 +37,29 @@ defmodule AshLearning.DataCase do
 
   @doc """
   Sets up the sandbox based on the test tags.
+  For E2E tests (when E2E=true), uses shared mode so Phoenix server can access test data.
   """
   def setup_sandbox(tags) do
-    pid = Sandbox.start_owner!(AshLearning.Repo, shared: not tags[:async])
-    on_exit(fn -> Sandbox.stop_owner(pid) end)
+    e2e_mode = System.get_env("E2E") == "true"
+
+    if e2e_mode do
+      # E2E tests need shared database access because:
+      # 1. Test process creates test data (users, etc.)
+      # 2. Phoenix server process handles HTTP requests
+      # 3. Both processes need to see the same database state
+      # Without shared mode, each process would have isolated data
+      pid = Sandbox.start_owner!(AshLearning.Repo, shared: true)
+
+      # Grant the test process permission to use the shared sandbox
+      # The Phoenix server will automatically get access via shared: true
+      Sandbox.allow(AshLearning.Repo, pid, self())
+
+      on_exit(fn -> Sandbox.stop_owner(pid) end)
+    else
+      # Normal unit/integration tests use isolated sandbox
+      pid = Sandbox.start_owner!(AshLearning.Repo, shared: not tags[:async])
+      on_exit(fn -> Sandbox.stop_owner(pid) end)
+    end
   end
 
   @doc """

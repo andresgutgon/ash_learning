@@ -52,21 +52,22 @@ config :ash_learning,
   generators: [timestamp_type: :utc_datetime],
   ash_domains: [AshLearning.Accounts]
 
-phx_host = System.get_env("PHX_HOST")
-app_host = System.get_env("APP_HOST")
+phx_host = System.get_env("PHX_HOST") || "localhost"
+vite_host = "vite.#{phx_host}"
+app_host = "app.#{phx_host}"
 
 config :ash_learning, AshLearningWeb,
   main_host: phx_host,
   app_host: app_host,
   site_url: "https://#{phx_host}",
-  app_url: "https://#{app_host}"
+  app_url: "https://#{app_host}",
+  vite_host: vite_host,
+  vite_domain: "https://#{vite_host}"
 
 # Configure the endpoint
 config :ash_learning, AshLearningWeb.Endpoint,
-  url: [host: "localhost"],
   adapter: Bandit.PhoenixAdapter,
   render_errors: [
-    # TODO: Implement intertia static SSR render errors
     formats: [html: AshLearningWeb.ErrorHTML, json: AshLearningWeb.ErrorJSON],
     layout: false
   ],

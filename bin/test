@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Run unit tests (excluding E2E)
+echo "🧪 Running unit tests..."
+./bin/dev test --exclude e2e "$@"

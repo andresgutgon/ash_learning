@@ -11,6 +11,9 @@ inputs:
   build:
     description: Full build mode - compile, build assets, save cache
     default: "false"
+  assets-env:
+    description: MIX_ENV for building assets (defaults to test)
+    default: "test"
 
 runs:
   using: composite
@@ -41,15 +44,15 @@ runs:
       working-directory: assets
       run: pnpm install
 
+    - name: Clone vendor dependencies
+      shell: bash
+      run: ./bin/clone-vendor-deps.sh
+
     - name: Set up Elixir
       uses: erlef/setup-beam@v1
       with:
         elixir-version: ${{ inputs.elixir-version }}
         otp-version: ${{ inputs.otp-version }}
-
-    - name: Clone vendor dependencies
-      shell: bash
-      run: ./bin/clone-vendor-deps.sh
 
     - name: Cache Mix dependencies
       if: inputs.build == 'true'
@@ -74,9 +77,11 @@ runs:
       if: inputs.build == 'true'
       shell: bash
       run: |
-        mix assets.build
+        MIX_ENV=${{ inputs.assets-env }} mix assets.deploy
         cp assets/package.json priv/ssr-js/package.json
         cp -r assets/node_modules priv/ssr-js/
+      env:
+        MIX_ENV: ${{ inputs.assets-env }}
 
     - name: Save build cache
       if: inputs.build == 'true'
@@ -86,6 +91,7 @@ runs:
           deps
           _build
           priv/ssr-js
+          priv/static
         key: build-${{ github.sha }}-${{ inputs.otp-version }}-${{ inputs.elixir-version }}
 
     - name: Restore build cache
@@ -96,4 +102,5 @@ runs:
           deps
           _build
           priv/ssr-js
+          priv/static
         key: build-${{ github.sha }}-${{ inputs.otp-version }}-${{ inputs.elixir-version }}

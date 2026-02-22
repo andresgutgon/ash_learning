@@ -1,5 +1,4 @@
 import '../css/app.css'
-
 import { createInertiaApp } from '@inertiajs/react'
 import axios from 'axios'
 import { StrictMode } from 'react'
