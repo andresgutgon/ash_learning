@@ -2,6 +2,7 @@ import { buildUrl, type RouteQueryOptions, type RouteDefinition, type RouteDefin
 
 /**
  * @see AshLearningWeb.Account.ConnectionsController::delete
+ * @see lib/ash_learning_web/controllers/account/connections_controller.ex:17
  * @route /account/connections/:provider/:uid
 */
 
@@ -31,6 +32,7 @@ deleteAccountConnection.delete = (args: { provider: string | number, uid: string
 
 /**
  * @see AshLearningWeb.Account.ConnectionsController::index
+ * @see lib/ash_learning_web/controllers/account/connections_controller.ex:6
  * @route /account/connections
 */
 

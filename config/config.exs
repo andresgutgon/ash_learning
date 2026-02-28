@@ -52,7 +52,7 @@ config :ash_learning,
   generators: [timestamp_type: :utc_datetime],
   ash_domains: [AshLearning.Accounts]
 
-phx_host = System.fetch_env!("PHX_HOST")
+phx_host = System.get_env("PHX_HOST") || "localhost"
 vite_host = "vite.#{phx_host}"
 app_host = "app.#{phx_host}"
 

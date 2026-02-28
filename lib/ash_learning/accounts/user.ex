@@ -71,7 +71,8 @@ defmodule AshLearning.Accounts.User do
         confirm_on_update? true
 
         # Display a UI to confirm the email
-        # Otherwise a link GET confirm can be triggered without user interaction for some email clients.
+        # Confirm screen is more secure
+        # Avoid confirming email on GET request.
         require_interaction? true
 
         confirmed_at_field :confirmed_at

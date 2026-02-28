@@ -12,10 +12,11 @@ config :ash_learning, AshLearning.Repo,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
 
+phx_host = System.get_env("PHX_HOST") || "localhost"
 config :ash_learning, AshLearningWeb.Endpoint,
   # Network configuration
   http: [ip: {0, 0, 0, 0}, port: 4004],  # Bind to all interfaces for Traefik
-  url: [host: System.fetch_env!("PHX_HOST"), scheme: "https", port: 443],
+  url: [host: phx_host, scheme: "https", port: 443],
   check_origin: false,
 
   # Development features

@@ -2,7 +2,7 @@ import { buildUrl, type RouteQueryOptions, type RouteDefinition, type RouteDefin
 
 /**
  * @see AshLearningWeb.Dashboard.DashboardIndexController::index
- * @see lib/ash_learning_web/controllers/dashboard/dashboard_controller.ex:6
+ * @see lib/ash_learning_web/controllers/dashboard/dashboard_controller.ex:4
  * @route /
 */
 
