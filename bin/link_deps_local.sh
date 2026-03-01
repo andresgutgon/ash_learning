@@ -3,22 +3,6 @@ set -euo pipefail
 
 mkdir -p deps
 
-# Create symlink for fonts in development
-link_fonts() {
-  local src="assets/static/fonts"
-  local dst="priv/static/fonts"
-  
-  # Create priv/static directory if it doesn't exist
-  mkdir -p "priv/static"
-  
-  # Remove existing fonts directory/symlink
-  rm -rf "$dst"
-  
-  # Create symlink
-  ln -s "../../$src" "$dst"
-  echo "linked $dst -> $src"
-}
-
 # This is necessary to have local linked dependencies work
 # with `deps` in the root of the project, which is where mix expects them.
 # For example vitex exports a `js` module that is used by inertia-phoenix,
@@ -36,9 +20,6 @@ link() {
   ln -s "$src" "$dst"
   echo "linked $dst -> $src"
 }
-
-# Link fonts for development
-link_fonts
 
 # Developing dependencies locally.
 link vitex

@@ -11,6 +11,7 @@ app-*.tar
 
 /priv/static/assets/
 /priv/static/fonts
+/priv/static
 /priv/ssr-js/
 /priv/static/cache_manifest.json
 /priv/plts/

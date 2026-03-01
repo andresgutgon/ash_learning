@@ -1,5 +1,5 @@
 defmodule AshLearningWeb.Features.LoginTest do
-  use PhoenixTest.Playwright.Case, async: false
+  use AshLearningWeb.FeatureCase
 
   alias AshLearning.Accounts.User
 

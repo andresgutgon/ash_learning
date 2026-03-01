@@ -18,15 +18,16 @@ config :ash_learning, AshLearning.Repo,
   pool_size: System.schedulers_online() * 2
 
 config :ash_learning, AshLearningWeb.Endpoint,
-  http: [ip: {0, 0, 0, 0}, port: 4005],  # Use different port to avoid conflict
-  server: false,  # Never start server in test environment - use background server
+  http: [ip: {0, 0, 0, 0}, port: 4004],
+  server: true,
   secret_key_base: "3p13l2oHifykkF/elLvNvwON0SbALfKF7PL0KegqnizwbgKSedLMWRtTOQ7NswJI",
   watchers: []  # No watchers needed - using built assets
 
 config :phoenix_test,
   otp_app: :ash_learning,
   endpoint: AshLearningWeb.Endpoint,
-  base_url: "https://app.ashlearning.dev",  # Point to Traefik SSL endpoint
+  base_url: "https://app.ashlearning.dev",
+  cache_static_manifest: "priv/static/cache_manifest.json",
   playwright: [
     ws_endpoint: System.get_env("PLAYWRIGHT_WS_ENDPOINT")
   ]
@@ -42,10 +43,6 @@ config :logger, level: :warning
 
 # Initialize plugs at runtime for faster test compilation
 config :phoenix, :plug_init_mode, :runtime
-
-# Enable helpful, but potentially expensive runtime checks
-config :ash_learning,
-  test_dev_mode: true
 
 config :phoenix_live_view,
   enable_expensive_runtime_checks: true

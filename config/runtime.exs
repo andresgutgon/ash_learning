@@ -3,13 +3,11 @@ import Config
 env = config_env()
 dev_mode = env == :dev
 prod_mode = env == :prod
-test_dev_mode = env == :test and System.get_env("CI") != "true"
 
 config :ash_learning,
   env: env,
   dev_mode: dev_mode,
-  prod_mode: prod_mode,
-  test_dev_mode: test_dev_mode
+  prod_mode: prod_mode
 
 host_config = Application.fetch_env!(:ash_learning, AshLearningWeb)
 main_host = host_config[:main_host]
@@ -29,7 +27,7 @@ config :ash_learning, :google,
 
 config :ash_learning, Inertia.SSR,
   path: Path.join([Application.app_dir(:ash_learning), "priv", "ssr-js"]),
-  ssr_adapter: Vitex.inertia_ssr_adapter(dev_mode: dev_mode or test_dev_mode),
+  ssr_adapter: Vitex.inertia_ssr_adapter(dev_mode: dev_mode),
   esm: true
 
 # The secret key base is used to sign/encrypt cookies and other secrets.

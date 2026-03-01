@@ -8,11 +8,6 @@
       {assigns[:page_title]}
     </.inertia_title>
     <.inertia_head content={@inertia_head} />
-    <%= unless dev_mode?() do %>
-      /* In production, we can rely on the CSS being precompiled and
-      available at the expected path. */
-      <link phx-track-static rel="stylesheet" href={~p"/assets/css/app.css"} />
-    <% end %>
     <%= if dev_mode?() do %>
       <style>
         /* TODO: move to Vitext when available */

@@ -6,7 +6,6 @@ defmodule AshLearning.Application do
   @impl true
   def start(_type, _args) do
     dev_mode = Application.get_env(:ash_learning, :dev_mode)
-    dev_test_mode = Application.get_env(:ash_learning, :test_dev_mode)
     vite_domain = Application.fetch_env!(:ash_learning, AshLearningWeb)[:vite_domain]
 
     children = [
@@ -17,7 +16,7 @@ defmodule AshLearning.Application do
       AshLearningWeb.Endpoint,
       {AshAuthentication.Supervisor, [otp_app: :ash_learning]},
       {Vitex,
-       dev_mode: dev_mode or dev_test_mode,
+       dev_mode: dev_mode,
        endpoint: AshLearningWeb.Endpoint,
        vite_host: vite_domain,
        js_framework: :react,
