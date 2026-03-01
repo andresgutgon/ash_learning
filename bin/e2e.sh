@@ -47,6 +47,9 @@ echo "🗄️  Using test database..."
 MIX_ENV=test ./bin/dev ecto.create --quiet || true
 MIX_ENV=test ./bin/dev ecto.migrate --quiet || true
 
+echo "🔧 Building and digesting assets for E2E tests..."
+MIX_ENV=test ./bin/dev assets.deploy
+
 echo "🔧 Compiling with test environment..."
 MIX_ENV=test ./bin/dev compile
 

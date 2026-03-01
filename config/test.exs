@@ -19,11 +19,9 @@ config :ash_learning, AshLearning.Repo,
 
 config :ash_learning, AshLearningWeb.Endpoint,
   http: [ip: {0, 0, 0, 0}, port: 4005],  # Use different port to avoid conflict
-  server: System.get_env("PHX_SERVER") == "true",
+  server: false,  # Never start server in test environment - use background server
   secret_key_base: "3p13l2oHifykkF/elLvNvwON0SbALfKF7PL0KegqnizwbgKSedLMWRtTOQ7NswJI",
-  watchers: [
-    pnpm: ["run", "dev", cd: Path.expand("../assets", __DIR__)]
-  ]
+  watchers: []  # No watchers needed - using built assets
 
 config :phoenix_test,
   otp_app: :ash_learning,
