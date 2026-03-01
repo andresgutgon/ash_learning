@@ -55,6 +55,7 @@ services:
       - "3000:3000"
     environment:
       - DISPLAY=:99
+      - NODE_EXTRA_CA_CERTS=/usr/local/share/ca-certificates/mkcert-root-ca.crt
     extra_hosts:
       - "ashlearning.dev:host-gateway"
       - "app.ashlearning.dev:host-gateway"
