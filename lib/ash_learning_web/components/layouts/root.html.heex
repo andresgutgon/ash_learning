@@ -8,7 +8,6 @@
       {assigns[:page_title]}
     </.inertia_title>
     <.inertia_head content={@inertia_head} />
-    <link phx-track-static rel="stylesheet" href={~p"/assets/css/app.css"} />
     <%= if dev_mode?() do %>
       <style>
         /* TODO: move to Vitext when available */
@@ -21,10 +20,10 @@
   </head>
   <body>
     {@inner_content}
-    
-<!-- TODO: Move to Vitex and make a helper for this -->
+
     <%= if dev_mode?() do %>
       <script>
+        // TODO: Move to Vitex and make a helper for this
         /* Prevents flash of unstyled content in development */
         document.addEventListener("DOMContentLoaded", () => {
           document.body.style.visibility = 'visible';

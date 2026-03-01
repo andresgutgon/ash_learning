@@ -3,29 +3,31 @@ import Config
 env = config_env()
 dev_mode = env == :dev
 prod_mode = env == :prod
-test_dev_mode = env == :test and System.get_env("CI") != "true"
 
 config :ash_learning,
   env: env,
   dev_mode: dev_mode,
-  prod_mode: prod_mode,
-  test_dev_mode: test_dev_mode
+  prod_mode: prod_mode
 
-# GitHub OAuth Configuration
-# Make sure to set these environment variables or source .env.development
+host_config = Application.fetch_env!(:ash_learning, AshLearningWeb)
+main_host = host_config[:main_host]
+app_url = host_config[:app_url]
+google_redirect = "#{app_url}/#{System.get_env("GOOGLE_REDIRECT_URI")}"
+github_redirect = "#{app_url}/#{System.get_env("GITHUB_REDIRECT_URI")}"
+
 config :ash_learning, :github,
   client_id: System.get_env("GITHUB_CLIENT_ID"),
   client_secret: System.get_env("GITHUB_CLIENT_SECRET"),
-  redirect_uri: System.get_env("GITHUB_REDIRECT_URI")
+  redirect_uri: github_redirect
 
 config :ash_learning, :google,
   client_id: System.get_env("GOOGLE_CLIENT_ID"),
   client_secret: System.get_env("GOOGLE_CLIENT_SECRET"),
-  redirect_uri: System.get_env("GOOGLE_REDIRECT_URI")
+  redirect_uri: google_redirect
 
 config :ash_learning, Inertia.SSR,
   path: Path.join([Application.app_dir(:ash_learning), "priv", "ssr-js"]),
-  ssr_adapter: Vitex.inertia_ssr_adapter(dev_mode: dev_mode or test_dev_mode),
+  ssr_adapter: Vitex.inertia_ssr_adapter(dev_mode: dev_mode),
   esm: true
 
 # The secret key base is used to sign/encrypt cookies and other secrets.
@@ -43,19 +45,15 @@ secret_key_base =
 config :ash_learning, :dns_cluster_query, System.get_env("DNS_CLUSTER_QUERY")
 
 config :ash_learning, AshLearningWeb.Endpoint,
-  url: [host: System.get_env("PHX_HOST"), scheme: "https", port: 443],
-  http: [
-    # Enable IPv6 and bind on all interfaces.
-    # Set it to  {0, 0, 0, 0, 0, 0, 0, 1} for local network only access.
-    # See the documentation on https://hexdocs.pm/bandit/Bandit.html#t:options/0
-    # for details about using IPv6 vs IPv4 and loopback vs public addresses.
-    ip: {0, 0, 0, 0, 0, 0, 0, 0}
-  ],
+  # Runtime network configuration
+  url: [host: main_host, scheme: "https", port: 443],
+  http: [ip: {0, 0, 0, 0, 0, 0, 0, 0}],  # IPv6 for production
   secret_key_base: secret_key_base
 
 if config_env() == :prod do
-  # force_ssl is set at compile-time in prod.exs, but we need hsts at runtime too
-  config :ash_learning, AshLearningWeb.Endpoint, force_ssl: [hsts: true]
+  config :ash_learning, AshLearningWeb.Endpoint,
+    cache_static_manifest: "priv/static/cache_manifest.json",
+    force_ssl: [rewrite_on: [:x_forwarded_proto], hsts: true]
 
   database_url =
     System.get_env("DATABASE_URL") ||

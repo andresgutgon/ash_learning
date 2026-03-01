@@ -57,6 +57,9 @@ defmodule AshLearning.MixProject do
       {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 4.1"},
       {:phoenix_live_view, "~> 1.1.0"},
+      {:phoenix_test, "~> 0.9.1", only: :test, runtime: false},
+      {:phoenix_test_playwright, "~> 0.12", only: :test, runtime: false},
+      {:websockex, "~> 0.4", only: :test},
       {:lazy_html, ">= 0.1.0", only: :test},
       {:phoenix_live_dashboard, "~> 0.8.3"},
       {:swoosh, "~> 1.16"},
@@ -69,9 +72,31 @@ defmodule AshLearning.MixProject do
       {:dns_cluster, "~> 0.2.0"},
       {:bandit, "~> 1.5"},
       {:wayfinder_ex, "~> 0.1.6"},
-      {:inertia, path: "vendor/inertia-phoenix", override: true},
-      {:vitex, path: "vendor/vitex", override: true}
+      path_dep(:inertia, "inertia-phoenix"),
+      path_dep(:vitex, "vitex")
     ]
+  end
+
+  defp path_dep(app, app_folder) do
+    dev_machine_path = Path.join(System.get_env("HOME"), "code/opensource/#{app_folder}")
+    ci_path = "vendor/#{app_folder}"
+
+    cond do
+      File.dir?(dev_machine_path) ->
+        {app, path: dev_machine_path, override: true}
+
+      File.dir?(ci_path) ->
+        {app, path: ci_path, override: true}
+
+      true ->
+        raise """
+        Missing #{app} dependency.
+
+        Expected one of:
+          - #{dev_machine_path}
+          - #{ci_path}
+        """
+    end
   end
 
   defp aliases do

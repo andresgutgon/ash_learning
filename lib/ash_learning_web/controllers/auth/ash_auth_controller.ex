@@ -31,7 +31,6 @@ defmodule AshLearningWeb.Auth.AshAuthController do
 
   defp failure_message_and_redirect(conn, activity, reason) do
     case {activity, reason} do
-      # OAuth account already connected to another user
       {{provider, :callback},
        %AshAuthentication.Errors.AuthenticationFailed{
          caused_by: %Ash.Error.Invalid{errors: errors}

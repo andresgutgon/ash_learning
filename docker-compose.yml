@@ -8,7 +8,7 @@ services:
       - --entrypoints.web.http.redirections.entrypoint.scheme=https
       - --api.insecure=true
       - --providers.docker=true
-      - --providers.file.filename=/src/docker/dev-certificates/dynamic.yml
+      - --providers.file.filename=/certs/dynamic.yml
       - --providers.file.watch=true
     ports:
       - "80:80"
@@ -16,82 +16,11 @@ services:
       - "8080:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ash_learning_src:/src:ro
-    env_file:
-      - .env.development
+      - ./docker/dev-certificates:/certs:ro
     networks:
       - ash_learning_network
-
-  web:
-    container_name: ash_learning
-    build:
-      context: .
-      dockerfile: docker/Dockerfile
-      target: dev
-    command: iex -S mix phx.server
-    ports:
-      - "${PORT}"
-      - "5173:5173"
-    expose:
-      - "4004" # Internal port for Traefik
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.services.web.loadbalancer.server.port=4004"
-      - "traefik.http.services.vite.loadbalancer.server.port=5173"
-
-      - "traefik.http.routers.site.rule=Host(`${PHX_HOST}`)"
-      - "traefik.http.routers.site.entrypoints=websecure"
-      - "traefik.http.routers.site.service=web"
-      - "traefik.http.routers.site.tls=true"
-
-      - "traefik.http.routers.app.rule=Host(`${APP_HOST}`)"
-      - "traefik.http.routers.app.entrypoints=websecure"
-      - "traefik.http.routers.app.service=web"
-      - "traefik.http.routers.app.tls=true"
-
-      - "traefik.http.services.vite.loadbalancer.server.port=5173"
-      - "traefik.http.services.vite.loadbalancer.server.scheme=http"
-      - "traefik.http.services.vite.loadbalancer.passhostheader=true"
-      - "traefik.http.routers.vite.rule=Host(`${VITE_HOST}`)"
-      - "traefik.http.routers.vite.entrypoints=websecure"
-      - "traefik.http.routers.vite.service=vite"
-      - "traefik.http.routers.vite.tls=true"
-
-    volumes:
-      # Source code
-      - ash_learning_src:/ash_learning
-
-      # Dependencies and build artifacts
-      - ash_learning_deps:/ash_learning/deps
-      - ash_learning_build:/ash_learning/_build
-      - node_modules_container:/ash_learning/assets/node_modules
-
-      - /Users/andres/code/opensource/inertia-phoenix:/ash_learning/vendor/inertia-phoenix
-      - /Users/andres/code/opensource/ash_authentication_phoenix:/ash_learning/vendor/ash_authentication_phoenix
-      - /Users/andres/code/opensource/wayfinder:/ash_learning/vendor/wayfinder
-      - /Users/andres/code/opensource/vitex:/ash_learning/vendor/vitex
-
-      # IEx history
-      - ~/.iex_history:/root/.iex_history
-    working_dir: /ash_learning
-    depends_on:
-      - db
-      - mailpit
-    env_file:
-      - .env.development
-    environment:
-      - MIX_ENV=dev
-      - DB_HOST=db
-      - DB_USER=ash_learning
-      - DB_PASSWORD=secret
-      - MAILPIT_SMTP_HOST=ash_learning_mailpit
-      - MAILPIT_SMTP_PORT=1025
-      - ERL_AFLAGS=-kernel shell_history enabled -kernel shell_history_path '"/root/.iex_history"'
-
-    stdin_open: true
-    tty: true
-    networks:
-      - ash_learning_network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   db:
     image: postgres:18
@@ -115,12 +44,31 @@ services:
     networks:
       - ash_learning_network
 
+  playwright:
+    build:
+      context: .
+      dockerfile: ./docker/playwright/Dockerfile
+      target: playwright-dev
+      args:
+        DOMAIN: ashlearning.dev
+    ports:
+      - "3000:3000"
+    environment:
+      - DISPLAY=:99
+      - NODE_EXTRA_CA_CERTS=/usr/local/share/ca-certificates/mkcert-root-ca.crt
+    extra_hosts:
+      - "ashlearning.dev:host-gateway"
+      - "app.ashlearning.dev:host-gateway"
+      - "vite.ashlearning.dev:host-gateway"
+    networks:
+      - ash_learning_network
+    init: true
+    ipc: host
+    depends_on:
+      - traefik
+
 volumes:
   postgres_data:
-  node_modules_container:
-  ash_learning_src:
-  ash_learning_deps:
-  ash_learning_build:
 
 networks:
   ash_learning_network:
