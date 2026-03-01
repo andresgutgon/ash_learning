@@ -1,19 +1,50 @@
 #!/usr/bin/env bash
+#
+# Development helper script for ash_learning Phoenix application
+#
+# This script automatically sources environment variables from .env.development
+# and provides convenient shortcuts for common development tasks.
+#
+# Usage:
+#   ./bin/dev                   - Start Phoenix server (phx.server)
+#   ./bin/dev console           - Start IEx console with mix
+#   ./bin/dev <mix_command>     - Run any mix command with env vars loaded
+#
+# Examples:
+#   ./bin/dev                   - Starts Phoenix server
+#   ./bin/dev console           - Opens IEx console
+#   ./bin/dev compile           - Compiles the project
+#   ./bin/dev test              - Runs tests
+#   ./bin/dev deps.get          - Gets dependencies
+#   ./bin/dev ecto.create       - Creates database
+#   ./bin/dev ecto.migrate      - Runs migrations
+#
+# Environment Variables:
+#   This script sources .env.development to load environment variables needed
+#   for local development, including database credentials, API keys, and other
+#   configuration values.
+#
 set -e
 
 ENV_FILE=".env.development"
 
+# Source environment variables if the file exists
 if [ -f "$ENV_FILE" ]; then
-  set -a # auto-export variables
+  set -a
   source "$ENV_FILE"
   set +a
 fi
 
+# Handle different command patterns
 case "$1" in
-  c)
-    iex -S mix
+  console)
+    shift
+    iex -S mix "$@"
+    ;;
+  "")
+    iex -S mix phx.server
     ;;
   *)
-    iex -S mix phx.server
+    mix "$@"
     ;;
 esac
