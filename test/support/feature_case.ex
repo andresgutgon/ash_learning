@@ -8,7 +8,7 @@ defmodule AshLearningWeb.FeatureCase do
 
   using do
     quote do
-      # Don't use sandbox for E2E tests - we need real DB persistence
+      # Use Playwright for E2E tests with real Phoenix server
       use PhoenixTest.Playwright.Case, async: false
       import PhoenixTest
 
@@ -16,8 +16,9 @@ defmodule AshLearningWeb.FeatureCase do
     end
   end
 
-  # No sandbox setup for E2E tests - Phoenix needs to see the same data
-  setup _tags do
+  # Use Ash-compatible database setup (same as ConnCase)
+  setup tags do
+    AshLearning.DataCase.setup_sandbox(tags)
     :ok
   end
 end

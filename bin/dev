@@ -9,6 +9,7 @@
 #   ./bin/dev                   - Start Phoenix server (phx.server)
 #   ./bin/dev console           - Start IEx console with mix
 #   ./bin/dev <mix_command>     - Run any mix command with env vars loaded
+#   MIX_ENV=test ./bin/dev <cmd> - Override environment
 #
 # Examples:
 #   ./bin/dev                   - Starts Phoenix server
@@ -18,18 +19,19 @@
 #   ./bin/dev deps.get          - Gets dependencies
 #   ./bin/dev ecto.create       - Creates database
 #   ./bin/dev ecto.migrate      - Runs migrations
+#   MIX_ENV=test ./bin/dev test - Run tests in test environment
 #
 # Environment Variables:
 #   This script sources .env.development to load environment variables needed
 #   for local development, including database credentials, API keys, and other
-#   configuration values.
+#   configuration values. You can override MIX_ENV by prefixing the command.
 #
 set -e
 
 ENV_FILE=".env.development"
 
-# Source environment variables if the file exists
-if [ -f "$ENV_FILE" ]; then
+# Only source .env.development if MIX_ENV is dev or test (for E2E tests)
+if [ -f "$ENV_FILE" ] && [ "${MIX_ENV:-dev}" != "prod" ]; then
   set -a
   source "$ENV_FILE"
   set +a

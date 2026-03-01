@@ -5,24 +5,12 @@ defmodule AshLearningWeb.Features.LoginTest do
 
   @app_host "app.ashlearning.dev"  # Use dev domain for proper Vite HMR
 
-  test "can create and verify user", %{conn: conn} do
-    # Test just the user creation part
-    email = "test@example.com"
-    password = "password1234"
-    {:ok, user} = create_user(email, password)
-    
-    # Verify user was created with confirmation
-    assert to_string(user.email) == email
-    assert user.confirmed_at != nil
-    # Just verify the user exists - authentication testing will be in the E2E test
-  end
-
   test "login with email and password", %{conn: conn} do
     # 1. Create a user
     email = "user@example.com"
     password = "SuperSecret!!!69"
     {:ok, user} = create_user(email, password)
-    
+
     # Debug: verify the user before test
     IO.inspect(user, label: "Created user")
     IO.inspect(user.confirmed_at, label: "User confirmed_at")

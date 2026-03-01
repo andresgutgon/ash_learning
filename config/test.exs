@@ -3,36 +3,33 @@ config :ash_learning, token_signing_secret: "jGuPrTa+tduE7obfw5Vfz5oDNJcxFtY1"
 config :bcrypt_elixir, log_rounds: 1
 config :ash, policies: [show_policy_breakdowns?: true], disable_async?: true
 
-# Test hosts for router host constraints - use dev domains for Vite HMR
-config :ash_learning, AshLearningWeb,
-  main_host: "ashlearning.dev",      # Use dev domain
-  app_host: "app.ashlearning.dev",   # Use dev domain for Vite HMR
-  site_url: "https://ashlearning.dev",
-  app_url: "https://app.ashlearning.dev"
-
-System.put_env("VITE_HOST", "localhost:5173")
-
-# Configure your database
-#
-# The MIX_TEST_PARTITION environment variable can be used
-# to provide built-in test partitioning in CI environment.
-# Run `mix help test` for more information.
+# Test database configuration - use dedicated test DB
 config :ash_learning, AshLearning.Repo,
-  username: System.get_env("DB_USER") || "postgres",
-  password: System.get_env("DB_PASSWORD") || "postgres",
+  username: System.get_env("DB_USER") || "ash_learning",
+  password: System.get_env("DB_PASSWORD") || "secret",
   hostname: System.get_env("DB_HOST") || "localhost",
-  database: "ash_learning_development", # Use dev DB for E2E tests
+  # Docker postgres port
+  port: System.get_env("DB_PORT") || "5436",
+  # Use dedicated test database
+  database: "ash_learning_test",
+  # Keep sandbox for unit tests
   pool: Ecto.Adapters.SQL.Sandbox,
-  pool_size: 10
+  # Better for concurrent tests
+  pool_size: System.schedulers_online() * 2
 
+# Configure endpoint for test environment
 config :ash_learning, AshLearningWeb.Endpoint,
-  http: [ip: {0, 0, 0, 0}, port: 4002],  # Bind to all interfaces for Docker access
-  server: true
+  # Phoenix runs on 4004, Traefik proxies SSL
+  http: [ip: {0, 0, 0, 0}, port: 4004],
+  # Only start server when explicitly requested
+  server: System.get_env("PHX_SERVER") == "true",
+  secret_key_base: "3p13l2oHifykkF/elLvNvwON0SbALfKF7PL0KegqnizwbgKSedLMWRtTOQ7NswJI"
 
 config :phoenix_test,
   otp_app: :ash_learning,
+  endpoint: AshLearningWeb.Endpoint,
   playwright: [
-    ws_endpoint: "ws://playwright:3000"
+    ws_endpoint: System.get_env("PLAYWRIGHT_WS_ENDPOINT")
   ]
 
 # In test we don't send emails
