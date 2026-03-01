@@ -18,7 +18,7 @@ config :ash_learning, AshLearning.Repo,
   pool_size: System.schedulers_online() * 2
 
 config :ash_learning, AshLearningWeb.Endpoint,
-  http: [ip: {0, 0, 0, 0}, port: 4004],
+  http: [ip: {0, 0, 0, 0}, port: 4005],  # Use different port to avoid conflict
   server: System.get_env("PHX_SERVER") == "true",
   secret_key_base: "3p13l2oHifykkF/elLvNvwON0SbALfKF7PL0KegqnizwbgKSedLMWRtTOQ7NswJI",
   watchers: [
@@ -28,6 +28,7 @@ config :ash_learning, AshLearningWeb.Endpoint,
 config :phoenix_test,
   otp_app: :ash_learning,
   endpoint: AshLearningWeb.Endpoint,
+  base_url: "https://app.ashlearning.dev",  # Point to Traefik SSL endpoint
   playwright: [
     ws_endpoint: System.get_env("PLAYWRIGHT_WS_ENDPOINT")
   ]

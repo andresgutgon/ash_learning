@@ -1,27 +1,23 @@
 defmodule AshLearningWeb.Features.LoginTest do
-  use AshLearningWeb.FeatureCase
+  use PhoenixTest.Playwright.Case, async: false
 
   alias AshLearning.Accounts.User
 
-  @app_host "app.ashlearning.dev"  # Use dev domain for proper Vite HMR
+  # Use dev domain for proper Vite HMR
+  @app_host "app.ashlearning.dev"
 
   test "login with email and password", %{conn: conn} do
     # 1. Create a user
     email = "user@example.com"
     password = "SuperSecret!!!69"
-    {:ok, user} = create_user(email, password)
+    create_user(email, password)
 
-    # Debug: verify the user before test
-    IO.inspect(user, label: "Created user")
-    IO.inspect(user.confirmed_at, label: "User confirmed_at")
-
-    # 2. Test the actual login flow
     conn
     |> visit("https://#{@app_host}/login")
     |> fill_in("Email", with: email)
     |> fill_in("Password", with: password)
     |> click_button("Login")
-    |> assert_path("/") # Should redirect to home page after successful login
+    |> assert_path("/")
   end
 
   defp create_user(email, password) do

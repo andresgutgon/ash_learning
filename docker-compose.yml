@@ -19,6 +19,8 @@ services:
       - ./docker/dev-certificates:/certs:ro
     networks:
       - ash_learning_network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   db:
     image: postgres:18
