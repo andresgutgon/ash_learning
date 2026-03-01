@@ -16,9 +16,10 @@ defmodule AshLearningWeb.FeatureCase do
     end
   end
 
-  # Use Ash-compatible database setup (same as ConnCase)
-  setup tags do
-    AshLearning.DataCase.setup_sandbox(tags)
+  # For E2E tests, use shared sandbox mode to allow server and test to share DB state
+  setup _tags do
+    # Use shared mode so both the test process and Phoenix server can access the same sandbox
+    :ok = Ecto.Adapters.SQL.Sandbox.checkout(AshLearning.Repo, shared: true)
     :ok
   end
 end

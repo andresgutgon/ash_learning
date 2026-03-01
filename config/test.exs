@@ -17,13 +17,13 @@ config :ash_learning, AshLearning.Repo,
   # Better for concurrent tests
   pool_size: System.schedulers_online() * 2
 
-# Configure endpoint for test environment
 config :ash_learning, AshLearningWeb.Endpoint,
-  # Phoenix runs on 4004, Traefik proxies SSL
   http: [ip: {0, 0, 0, 0}, port: 4004],
-  # Only start server when explicitly requested
   server: System.get_env("PHX_SERVER") == "true",
-  secret_key_base: "3p13l2oHifykkF/elLvNvwON0SbALfKF7PL0KegqnizwbgKSedLMWRtTOQ7NswJI"
+  secret_key_base: "3p13l2oHifykkF/elLvNvwON0SbALfKF7PL0KegqnizwbgKSedLMWRtTOQ7NswJI",
+  watchers: [
+    pnpm: ["run", "dev", cd: Path.expand("../assets", __DIR__)]
+  ]
 
 config :phoenix_test,
   otp_app: :ash_learning,

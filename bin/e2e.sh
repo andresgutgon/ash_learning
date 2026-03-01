@@ -43,5 +43,6 @@ echo "🔧 Ensuring clean compile with test environment..."
 MIX_ENV=test ./bin/dev clean --quiet || true
 MIX_ENV=test ./bin/dev compile
 
-echo "🧪 Executing Elixir tests with ./bin/dev..."
-MIX_ENV=test ./bin/dev test $TEST_PATH
+# Run the tests with Phoenix server enabled
+echo "🧪 Executing Elixir tests with Phoenix + Vite servers..."
+MIX_ENV=test PHX_SERVER=true ./bin/dev test $TEST_PATH
