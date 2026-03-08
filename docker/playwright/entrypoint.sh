@@ -11,7 +11,7 @@ if [ -f "/tmp/ssl/rootCA.pem" ]; then
     for nss_dir in "$HOME/.pki/nssdb" "$HOME/.local/share/nssdb"; do
         echo "Processing NSS database: $nss_dir"
         mkdir -p "$nss_dir"
-        
+
         # Try to create NSS database, but don't fail if it already exists
         if ! certutil -d "sql:$nss_dir" -L >/dev/null 2>&1; then
             echo "Creating NSS database in $nss_dir..."
@@ -20,7 +20,7 @@ if [ -f "/tmp/ssl/rootCA.pem" ]; then
                 continue
             fi
         fi
-        
+
         # Install certificate if not already present
         if ! certutil -d "sql:$nss_dir" -L -n "root-ca" >/dev/null 2>&1; then
             echo "Installing certificate in $nss_dir..."
@@ -63,4 +63,4 @@ fi
 
 # Start Playwright server
 echo "Starting Playwright server on port 3000..."
-exec npx playwright run-server --port 3000 --host 0.0.0.0
+exec npx -y playwright@${PW_VERSION} run-server --port 3000 --host 0.0.0.0

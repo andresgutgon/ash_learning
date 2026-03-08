@@ -26,6 +26,8 @@ defmodule AshLearning.DataCase do
       import Ecto.Changeset
       import Ecto.Query
       import AshLearning.DataCase
+      import AshLearning.Factory
+      import AshLearning.DataCase
       import TestHelpers
     end
   end

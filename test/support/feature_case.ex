@@ -11,6 +11,7 @@ defmodule AshLearningWeb.FeatureCase do
       use PhoenixTest.Playwright.Case, async: true
       import PhoenixTest
       import TestHelpers
+      import AshLearning.Factory
 
       @endpoint AshLearningWeb.Endpoint
     end

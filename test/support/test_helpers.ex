@@ -25,4 +25,3 @@ defmodule TestHelpers do
     AshLearningWeb.AppUrl.app_url(path, host: :main)
   end
 end
-

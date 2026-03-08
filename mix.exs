@@ -57,9 +57,9 @@ defmodule AshLearning.MixProject do
       {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 4.1"},
       {:phoenix_live_view, "~> 1.1.0"},
-      {:phoenix_test, "~> 0.9.1", only: :test, runtime: false},
-      {:phoenix_test_playwright, "~> 0.12", only: :test, runtime: false},
-      {:websockex, "~> 0.4", only: :test},
+      {:phoenix_test, "~> 0.10.0", only: :test, runtime: false},
+      {:phoenix_test_playwright, "~> 0.13.0", only: :test, runtime: false},
+      {:websockex, "~> 0.5.1", only: :test},
       {:lazy_html, ">= 0.1.0", only: :test},
       {:phoenix_live_dashboard, "~> 0.8.3"},
       {:swoosh, "~> 1.16"},
@@ -72,6 +72,7 @@ defmodule AshLearning.MixProject do
       {:dns_cluster, "~> 0.2.0"},
       {:bandit, "~> 1.5"},
       {:wayfinder_ex, "~> 0.1.6"},
+      {:faker, "~> 0.18", only: :test},
       path_dep(:inertia, "inertia-phoenix"),
       path_dep(:vitex, "vitex")
     ]

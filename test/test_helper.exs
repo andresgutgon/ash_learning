@@ -1,14 +1,10 @@
+is_e2e = System.get_env("E2E") == "true"
+
 ExUnit.start()
 Ecto.Adapters.SQL.Sandbox.mode(AshLearning.Repo, :manual)
+Application.put_env(:ash_learning, :sql_sandbox, !is_e2e)
 
-# Set sql_sandbox configuration at runtime based on E2E environment
-if System.get_env("E2E") == "true" do
-  Application.put_env(:ash_learning, :sql_sandbox, true)
-else
-  Application.put_env(:ash_learning, :sql_sandbox, false)
-end
-
-if System.get_env("E2E") == "true" do
+if is_e2e do
   PhoenixTest.Playwright.Supervisor.start_link()
   Application.put_env(:phoenix_test, :base_url, AshLearningWeb.Endpoint.url())
 end

@@ -11,7 +11,7 @@ config :ash_learning, AshLearning.Repo,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
 
-phx_host = System.get_env("PHX_HOST") || "localhost"
+phx_host = System.get_env("PHX_HOST") || "ashlearning.dev"
 
 config :ash_learning, AshLearningWeb.Endpoint,
   # Network configuration

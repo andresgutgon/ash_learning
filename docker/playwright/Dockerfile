@@ -30,6 +30,7 @@ FROM playwright-base AS playwright-dev
 
 # Re-declare build args in this stage
 ARG PW_VERSION=1.58.2
+ENV PW_VERSION=${PW_VERSION}
 
 EXPOSE 3000
 

@@ -28,6 +28,16 @@ defmodule AshLearning.Accounts.User do
       public? true
     end
 
+    attribute :first_name, :string do
+      allow_nil? true
+      public? true
+    end
+
+    attribute :last_name, :string do
+      allow_nil? true
+      public? true
+    end
+
     attribute :hashed_password, :string, allow_nil?: true, sensitive?: true
 
     attribute :confirmed_at, :utc_datetime_usec
