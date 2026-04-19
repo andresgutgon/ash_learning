@@ -1,4 +1,0 @@
-tls:
-  certificates:
-    - certFile: /src/docker/dev-certificates/cert.pem
-      keyFile: /src/docker/dev-certificates/key.pem

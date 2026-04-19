@@ -9,9 +9,7 @@ defmodule AshLearningWeb.ConnCase do
 
   Finally, if the test case interacts with the database,
   we enable the SQL sandbox, so changes done to the database
-  are reverted at the end of every test. If you are using
-  PostgreSQL, you can even run database tests asynchronously
-  by setting `use AshLearningWeb.ConnCase, async: true`, although
+  are reverted at the end of every test. If you are using PostgreSQL, you can even run database tests asynchronously by setting `use AshLearningWeb.ConnCase, async: true`, although
   this option is not recommended for other databases.
   """
 
@@ -30,6 +28,7 @@ defmodule AshLearningWeb.ConnCase do
       import Plug.Conn
       import Phoenix.ConnTest
       import AshLearningWeb.ConnCase
+      import TestHelpers
     end
   end
 
@@ -50,8 +49,6 @@ defmodule AshLearningWeb.ConnCase do
   end
 
   setup tags do
-    AshLearning.DataCase.setup_sandbox(tags)
-
     conn =
       case tags[:host] do
         :main -> build_main_conn()

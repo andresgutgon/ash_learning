@@ -1,20 +1,26 @@
 import Config
 config :ash, policies: [show_policy_breakdowns?: true]
 
-# Configure your database
 config :ash_learning, AshLearning.Repo,
   username: "ash_learning",
   password: "secret",
-  hostname: "db",
+  hostname: "localhost",
   database: "ash_learning_development",
+  port: 5436,
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
 
+phx_host = System.get_env("PHX_HOST") || "ashlearning.dev"
+
 config :ash_learning, AshLearningWeb.Endpoint,
-  # Binding to 0.0.0.0 to allow access from other containers (Traefik)
+  # Network configuration
+  # Bind to all interfaces for Traefik
   http: [ip: {0, 0, 0, 0}, port: 4004],
+  url: [host: phx_host, scheme: "https", port: 443],
   check_origin: false,
+
+  # Development features
   code_reloader: true,
   debug_errors: true,
   watchers: [

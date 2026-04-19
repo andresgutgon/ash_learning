@@ -28,6 +28,16 @@ defmodule AshLearning.Accounts.User do
       public? true
     end
 
+    attribute :first_name, :string do
+      allow_nil? true
+      public? true
+    end
+
+    attribute :last_name, :string do
+      allow_nil? true
+      public? true
+    end
+
     attribute :hashed_password, :string, allow_nil?: true, sensitive?: true
 
     attribute :confirmed_at, :utc_datetime_usec
@@ -71,11 +81,18 @@ defmodule AshLearning.Accounts.User do
         confirm_on_update? true
 
         # Display a UI to confirm the email
-        # Otherwise a link GET confirm can be triggered without user interaction for some email clients.
+        # Confirm screen is more secure
+        # Avoid confirming email on GET request.
         require_interaction? true
 
         confirmed_at_field :confirmed_at
-        auto_confirm_actions [:sign_in_with_magic_link, :reset_password_with_token]
+
+        auto_confirm_actions [
+          :sign_in_with_magic_link,
+          :reset_password_with_token,
+          :register_with_google,
+          :register_with_github
+        ]
 
         sender AshLearning.Accounts.User.Senders.SendNewUserConfirmationEmail
       end

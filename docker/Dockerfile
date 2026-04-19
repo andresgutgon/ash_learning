@@ -1,5 +1,9 @@
 # syntax=docker/dockerfile:1.4
 
+# ::::::::::::::::::::::::: NOTE::::::::::::::::::::::::
+# This Dockerfile is not used. But is here as referece for
+# implementing a production-ready image in the future.
+# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 ARG ELIXIR_VERSION=1.19.0
 ARG OTP_VERSION=28.1.1
 ARG DEBIAN_VERSION=bullseye-20251208-slim

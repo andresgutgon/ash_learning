@@ -8,6 +8,12 @@ on:
 
 env:
   DB_HOST: localhost
+  DB_PORT: "5432"
+  DB_USER: postgres
+  DB_PASSWORD: postgres
+  DB_NAME: ash_learning_test
+  E2E: "false"
+  PHX_HOST: "ashlearning.dev"
   SECRET_KEY_BASE: "ci_only_test_secret_key_base_not_for_production_use_must_be_at_least_64_bytes_long!"
   MIX_ENV: test
   OTP_VERSION: "28.1.1"
@@ -109,7 +115,7 @@ jobs:
         run: mix dialyzer --format github --format dialyxir
 
   test:
-    name: Test
+    name: Unit Tests
     needs: compile
     runs-on: ubuntu-latest
     services:
@@ -134,4 +140,140 @@ jobs:
         with:
           otp-version: ${{ env.OTP_VERSION }}
           elixir-version: ${{ env.ELIXIR_VERSION }}
-      - run: mix test
+      - run: mix test --exclude e2e
+
+  e2e:
+    name: E2E Tests
+    needs: compile
+    runs-on: ubuntu-latest
+    services:
+      db:
+        image: postgres:15
+        ports: ["5432:5432"]
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: ash_learning_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # Cache and generate SSL certificates for E2E tests
+      - name: Cache SSL certificates
+        id: cache-ssl
+        uses: actions/cache@v4
+        with:
+          path: docker/dev-certificates/
+          key: ssl-certs-${{ runner.os }}-v1
+
+      - name: Generate SSL certificate for E2E tests
+        if: steps.cache-ssl.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p docker/dev-certificates
+
+          # Generate root CA
+          openssl req -x509 -newkey rsa:2048 -keyout docker/dev-certificates/rootCA-key.pem \
+            -out docker/dev-certificates/rootCA.pem -days 365 -nodes \
+            -subj "/C=US/ST=CI/L=CI/O=TestOrg/CN=TestCA"
+
+          # Generate certificate for domains (what Traefik uses)
+          openssl req -newkey rsa:2048 -keyout docker/dev-certificates/key.pem \
+            -out docker/dev-certificates/cert.csr -nodes \
+            -subj "/C=US/ST=CI/L=CI/O=TestOrg/CN=ashlearning.dev"
+
+          # Sign the certificate with the CA
+          openssl x509 -req -in docker/dev-certificates/cert.csr \
+            -CA docker/dev-certificates/rootCA.pem \
+            -CAkey docker/dev-certificates/rootCA-key.pem \
+            -CAcreateserial -out docker/dev-certificates/cert.pem \
+            -days 365 \
+            -extensions v3_req \
+            -extfile <(echo "[v3_req]"; echo "subjectAltName=DNS:ashlearning.dev,DNS:app.ashlearning.dev,DNS:vite.ashlearning.dev,DNS:localhost")
+
+          # Convert rootCA to base64 for Playwright container
+          base64 -w 0 docker/dev-certificates/rootCA.pem > docker/dev-certificates/rootCA.base64
+
+          # Clean up
+          rm docker/dev-certificates/cert.csr docker/dev-certificates/rootCA-key.pem
+
+      - name: Setup hosts for E2E domains
+        run: |
+          echo "127.0.0.1 ashlearning.dev" | sudo tee -a /etc/hosts
+          echo "127.0.0.1 app.ashlearning.dev" | sudo tee -a /etc/hosts
+          echo "127.0.0.1 vite.ashlearning.dev" | sudo tee -a /etc/hosts
+
+      - uses: ./.github/actions/setup-elixir
+        with:
+          otp-version: ${{ env.OTP_VERSION }}
+          elixir-version: ${{ env.ELIXIR_VERSION }}
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Start Caddy SSL proxy
+        run: |
+          docker run -d \
+            --name caddy-ssl \
+            --network host \
+            -e PHOENIX_HOST=localhost \
+            -e VITE_HOST=localhost \
+            -v ${{ github.workspace }}/docker/dev-certificates:/certs:ro \
+            -v ${{ github.workspace }}/docker/dev-certificates/Caddyfile:/etc/caddy/Caddyfile:ro \
+            caddy:2-alpine
+          echo "Caddy started with SSL certificates"
+
+      - name: Start Playwright with SSL certificates
+        run: |
+          docker run -d \
+            --name playwright-ssl \
+            --network host \
+            -v ${{ github.workspace }}/docker/dev-certificates:/tmp/ssl:ro \
+            ghcr.io/${{ github.repository_owner }}/playwright-chromium:latest
+          echo "Playwright started with SSL certificates"
+
+      - name: Wait for Playwright to be ready
+        run: |
+          echo "Waiting for Playwright WebSocket server..."
+          echo "=== Debugging Playwright connectivity ==="
+
+          echo "=== Full Playwright logs ==="
+          docker logs playwright-ssl || true
+          echo "=== Testing connectivity ==="
+          timeout 60 bash -c 'until curl -f http://localhost:3000 2>/dev/null; do sleep 2; done'
+          echo "Playwright is ready"
+
+      - name: Debug asset paths
+        run: |
+          echo "=== Checking manifest locations ==="
+          find . -name "vite_manifest.json" 2>/dev/null || echo "No manifest found anywhere"
+          ls -la _build/test/lib/ash_learning/priv/static/assets/ 2>/dev/null || echo "Assets dir missing"
+
+      - name: Run E2E tests
+        env:
+          E2E: "true"
+          PLAYWRIGHT_WS_ENDPOINT: "ws://localhost:3000"
+        run: |
+          echo "=== Debugging networking from Playwright container ==="
+          echo "Testing DNS resolution:"
+          docker exec playwright-ssl node -e "require('dns').lookup('ashlearning.dev', (err, addr) => console.log('ashlearning.dev ->', err || addr))" || true
+
+          echo "=== Debugging Caddy → Phoenix connectivity ==="
+          echo "Caddy logs:"
+          docker logs caddy-ssl | tail -20 || true
+          echo "Caddy environment variables:"
+          docker exec caddy-ssl env | grep -E "(PHOENIX_HOST|VITE_HOST)" || true
+          echo "=== Running E2E tests ==="
+
+          E2E=true PHX_SERVER=true mix test --only e2e

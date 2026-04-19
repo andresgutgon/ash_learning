@@ -2,6 +2,7 @@ import { buildUrl, type RouteQueryOptions, type RouteDefinition, type RouteDefin
 
 /**
  * @see AshLearningWeb.Auth.OAuthRedirectController::redirect_with_return_to
+ * @see lib/ash_learning_web/controllers/auth/oauth_redirect_controller.ex:5
  * @route /oauth/:provider
 */
 
