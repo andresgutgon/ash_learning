@@ -28,7 +28,6 @@ ENV HOME=/home/pw
 # Stage 2: Add certificates and final configuration
 FROM playwright-base AS playwright-dev
 
-# Re-declare build args in this stage
 ARG PW_VERSION=1.58.2
 ENV PW_VERSION=${PW_VERSION}
 
